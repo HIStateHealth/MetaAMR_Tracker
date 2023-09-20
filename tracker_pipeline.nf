@@ -94,10 +94,25 @@ process AMRFinder {
         output:
         file 'amr_output.txt' into amr_results
 
-        script:
-        """
-        plasmidfinder -i ${params.output_dir}/megahit_output -o ${params.output_dir}/plasmidfinder_output
+    script:
+    """
+    amrfinder -p ${params.output_dir}/megahit_output -o ${params.output_dir}/amr_output.txt
+    """
 }
+
+process PlasmidFinder {
+    input:
+    file megahit_output from megahit_results
+
+    output:
+    file 'plasmidfinder_output' into plasmidfinder_results
+
+    script:
+    """
+    plasmidfinder -i ${params.output_dir}/megahit_output -o ${params.output_dir}/plasmidfinder_output
+    """
+}
+
 
 process VirSorter2 {
           input:
@@ -112,6 +127,7 @@ process VirSorter2 {
 
             """
 }
+
 
 workflow  {
     fastQC()
