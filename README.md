@@ -8,5 +8,4 @@ to deliver a holistic view of the microbial resistome.
 
 
 
-file:///home/user01/Downloads/pipeline_drawing.drawio.html
 
