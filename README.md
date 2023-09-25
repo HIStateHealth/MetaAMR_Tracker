@@ -5,3 +5,8 @@ to deliver a holistic view of the microbial resistome.
 
 
 ![pipeline](https://github.com/HIStateHealth/MetaAMR_Tracker/assets/138935158/ca9602d0-0d8f-44e6-ad3d-5764e41adeb2)
+
+
+
+file:///home/user01/Downloads/pipeline_drawing.drawio.html
+
