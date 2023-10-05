@@ -24,3 +24,47 @@ to deliver a holistic view of the microbial resistome.
 
 
 ![pipeline_drawing (1)](https://github.com/HIStateHealth/MetaAMR_Tracker/assets/138935158/acb5b2af-0660-414d-a10e-365b4a611294)
+
+
+
+# Metagenomic Analysis Pipeline with Nextflow
+
+## Introduction
+This pipeline serves as a comprehensive solution for metagenomic data analysis. It is designed to run in a Nextflow environment, leveraging Docker containers for seamless software management. The pipeline incorporates a variety of bioinformatics tools for tasks ranging from quality control to specialized analyses like antibiotic resistance and viral identification.
+
+## Prerequisites
+Before you begin, ensure that you have installed the following:
+- [Nextflow](https://www.nextflow.io/)
+- [Docker](https://www.docker.com/products/docker-desktop)
+- All bioinformatics tools listed in the Nextflow script
+
+## Setup
+1. Clone the GitHub repository.
+    ```bash
+    git clone [Your GitHub URL]
+    ```
+
+2. Navigate into the project directory.
+    ```bash
+    cd [Your Project Directory]
+    ```
+
+## Example Command
+Here's an example command to help you get started. Replace the paths with those corresponding to your own setup.
+
+```bash
+nextflow run tracker_test_pipeline_2.nf \
+--first_fastq /path/to/first_fastq_file \
+--second_fastq /path/to/second_fastq_file \
+--output_dir /path/to/output_directory \
+--adapters /path/to/adapters_file \
+--kraken2_db /path/to/kraken2_db \
+--metaphlan_db /path/to/metaphlan_db \
+--virsorter2_db /path/to/virsorter2_db
+
+
+
+
+
+
+
