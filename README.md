@@ -43,12 +43,12 @@ Before you begin, ensure that you have installed the following:
 ## Setup
 1. Clone the GitHub repository.
     ```bash
-    git clone [Your GitHub URL]
+    git clone https://github.com/HIStateHealth/MetaAMR_Tracker.git
     ```
 
 2. Navigate into the project directory.
     ```bash
-    cd [Your Project Directory]
+    cd [I will put my Project Directory here]
     ```
 
 ## Example Command
