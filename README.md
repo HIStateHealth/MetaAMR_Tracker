@@ -63,8 +63,11 @@ nextflow run tracker_test_pipeline_2.nf \
 --virsorter2_db /path/to/virsorter2_db
 
 
-
-
+process VirSorter2 {
+	container 'staphb/virsorter2:latest'
+	publishDir "${params.output_dir}/virsorter2_output", mode: 'copy'
+	// ... [rest of the code]
+}
 
 
 
