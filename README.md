@@ -36,6 +36,8 @@ This pipeline serves as a comprehensive solution for metagenomic data analysis. 
 Before you begin, ensure that you have installed the following:
 - [Nextflow](https://www.nextflow.io/)
 - [Docker](https://www.docker.com/products/docker-desktop)
+- Python 3.0 or higher
+- 
 - All bioinformatics tools listed in the Nextflow script
 
 ## Setup
