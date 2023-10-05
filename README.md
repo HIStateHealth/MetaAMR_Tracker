@@ -9,4 +9,4 @@ to deliver a holistic view of the microbial resistome.
 
 
 
-![image](https://github.com/HIStateHealth/MetaAMR_Tracker/assets/138935158/b309816e-527d-411f-9f3d-5ce2dd657544)
+![pipeline_drawing (1)](https://github.com/HIStateHealth/MetaAMR_Tracker/assets/138935158/acb5b2af-0660-414d-a10e-365b4a611294)
