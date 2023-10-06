@@ -37,6 +37,7 @@ Before you begin, ensure that you have installed the following:
 - [Nextflow](https://www.nextflow.io/)
 - [Docker](https://www.docker.com/products/docker-desktop)
 - Python 3.0 or higher
+- git
 - 
 - All bioinformatics tools listed in the Nextflow script
 
