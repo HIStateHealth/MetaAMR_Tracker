@@ -22,8 +22,7 @@ to deliver a holistic view of the microbial resistome.
 
 
 
-[[Uploading pipeline_drawing.drawio…]()
-](https://app.diagrams.net/)
+![pipeline_drawing (2)](https://github.com/HIStateHealth/MetaAMR_Tracker/assets/138935158/235f4f2c-b2b9-42c9-92f0-a7208ed78a8e)
 
 
 
