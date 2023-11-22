@@ -1,0 +1,2 @@
+Organism Scientific Name	Organism Common Name	Organism Qualifier	Taxonomy id	Assembly Name	Assembly Accession	Source	Annotation	Level	Contig N50	Size	Submission Date	Gene Count	BioProject	BioSample
+Escherichia coli	E. coli	strain: Ecol_316	562	ASM201198v1	GCF_002011985.1	RefSeq	NCBI Prokaryotic Genome Annotation Pipeline (PGAP)	Complete Genome	5056072	5471138	2017-03-03	5333	PRJNA316786	SAMN05511183
