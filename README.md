@@ -150,6 +150,21 @@ nextflow run [Your Pipeline Script Name].nf --first_fastq <path_to_first_fastq> 
 
 
 To run the pipeline, use the following command structure, replacing <placeholders> with appropriate paths or values:
+
+// Define your processes here
+// Example:
+process fastQC {
+    container 'staphb/fastqc:latest'
+    // ... rest of the fastQC process
+}
+// Add other processes similarly
+
+// Define the workflow
+workflow {
+    // Your workflow steps go here
+}
+
+
 ## Important Note on Nextflow DSL Version
 
 This pipeline is written using Nextflow DSL 2 syntax. To run this pipeline, your environment needs to support Nextflow DSL 2.
@@ -165,7 +180,8 @@ nextflow.enable.dsl=2
 
 
 ## Example Command
-Here's an example command to help you get started. Replace the paths with those corresponding to your own setup.
+Here's an example command to help you get started. @@@####****REPLACE THE PATHS WITH THOSE
+CORRESPONDING TO YOUR OWN SETUP, OR IT WILL NOT WORK....*****####
 
 ```nextflow
 #!/usr/bin/env nextflow
