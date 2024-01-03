@@ -181,7 +181,8 @@ nextflow.enable.dsl=2
 
 ## Example Command
 Here's an example command to help you get started. @@@####****REPLACE THE PATHS WITH THOSE
-CORRESPONDING TO YOUR OWN SETUP, OR IT WILL NOT WORK....*****####
+CORRESPONDING TO YOUR OWN SETUP IF YOU WANT TO MODIFY THE PIPELINE. Or to run this pipeline, just clone this a run it as is with
+your different fastq file for it to work, as per instructions in the command line in the previous step....*****####
 
 ```nextflow
 #!/usr/bin/env nextflow
