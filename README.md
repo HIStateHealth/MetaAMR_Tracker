@@ -23,8 +23,8 @@ From quality control to contig assembly and resistance gene identification, Meta
 
 
 
-![pipeline_drawing_Hybrid drawio (2)](https://github.com/HIStateHealth/MetaAMR_Tracker/assets/138935158/c56b1427-08b0-4aba-86fa-69d50eb9554c)
 
+![pipeline_drawing_Hybrid](https://github.com/HIStateHealth/MetaAMR_Tracker/assets/138935158/dadd4b1d-5eb5-4ade-b049-7aaa54967f7e)
 
 
 
