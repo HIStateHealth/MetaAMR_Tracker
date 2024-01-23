@@ -230,7 +230,6 @@ process GTDBTK {
 	"""
 	}
 
-
 process PrependBinNames {
     
     container 'bladerunner2945/prepend_bin_names:latest'
@@ -285,6 +284,25 @@ process AMRfinder {
 	amrfinder -n ${merged_bins_fa} -o amrfinder_output/amr_finder_report.txt
 	"""
 	}
+	
+process Deep_Arg {
+
+	container 'bladerunner2945/deep_arg:latest'
+	publishDir "${params.output_dir}/deep_arg_output", mode: 'copy'
+
+	input:
+	path merged_bins_fa
+
+	output:
+	path "deep_arg_output", emit: deep_arg_report
+
+	script:
+	"""
+	mkdir -p deep_arg_output
+	deeparg predict --model LS --input ${merged_bins_fa} --output deep_arg_output/deep_arg_results --d /data/deeparg_data
+	"""
+	}	
+
 	
 
 process PlasmidFinder {
@@ -344,10 +362,10 @@ workflow  {
     merged_bins = PrependBinNames(dastool_output_bins)
     vsearch_output = Vsearch(merged_bins, params.utax_reference_db)
     amrfinder_output = AMRfinder(merged_bins)
+    deeparg_results = Deep_Arg(merged_bins)
     plasmidfinder_output = PlasmidFinder(merged_bins)
     virsorter2_output = VirSorter2(merged_bins, params.virsorter2_db)
     gtdbtk_output = GTDBTK(dastool_output_bins, params.gtdbtk_db)
     
      }
-
 
