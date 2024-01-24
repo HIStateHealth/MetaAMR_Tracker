@@ -376,6 +376,29 @@ workflow {
     gtdbtk_output = GTDBTK(dastool_output_bins, params.gtdbtk_db)
 }
 
+## COMMAND LINE RUN EXAMPLE...
+
+
+#######           To run the command line. PUT THIS IN THE COMMAND LINE TO RUN IT for ILLUMINA   #######
+nextflow run tracker_test_pipeline_2.nf --first_fastq /home/user01/milestones_6/metagenomics_custom_pipeline/fastq_files/DRR274968_1.fastq.gz --second_fastq /home/user01/milestones_6/metagenomics_custom_pipeline/fastq_files/DRR274968_2.fastq.gz --output_dir /home/user01/milestones_6/metagenomics_custom_pipeline/nextflow_workflow/Meta_Pipeline/MetaAMR_Tracker/Nextflow_output_directory --adapters /home/user01/milestones_6/metagenomics_custom_pipeline/Trimmomatic/TruSeq3-PE.fa --kraken2_db /home/user01/milestones_6/metagenomics_custom_pipeline/kraken2/k2_plus_small_db_8gb --utax_reference_db /home/user01/milestones_6/metagenomics_custom_pipeline/VSEARCH_DOCKER/utax_reference_dataset_25.07.2023.fasta --virsorter2_db /home/user01/milestones_6/metagenomics_custom_pipeline/virsorter2_DOCKER/db --gtdbtk_db /home/user01/milestones_6/metagenomics_custom_pipeline/GTDB_tk/gtdbtk_r214_data/release214 -resume
+
+
+
+
+##################  *******************  Command line for NANOPORE  **************************##########################
+
+
+
+nextflow run NANOPORE_Nexflow_Pipeline.nf --nanopore_fastq /home/user01/milestones_6/CAMISIM_PROGRAM/genomes_fasta_files/NANO_SIM_PROGRAM/NanoSim_1k_OUTPUT_TEST_sample0_aligned_reads.fastq.gz --output_dir /home/user01/milestones_6/metagenomics_custom_pipeline/nextflow_workflow/Meta_Pipeline/MetaAMR_Tracker/NANOPORE_NEXTFLOW_OUTPUT --kraken2_db /home/user01/milestones_6/metagenomics_custom_pipeline/kraken2/k2_plus_small_db_8gb --gtdbtk_db /home/user01/milestones_6/metagenomics_custom_pipeline/GTDB_tk/gtdbtk_r214_data/release214 --utax_reference_db /home/user01/milestones_6/metagenomics_custom_pipeline/VSEARCH_DOCKER/utax_reference_dataset_25.07.2023.fasta --virsorter2_db /home/user01/milestones_6/metagenomics_custom_pipeline/virsorter2_DOCKER/db  -resume
+
+
+
+
+
+##################  *******************  Command line for HYBRID  **************************##########################
+
+nextflow run HYBRID_Meta_Tracker_Pipeline.nf --first_fastq /home/user01/milestones_6/metagenomics_custom_pipeline/HYBRID_Pipeline/Illumina/SRR23926929_1.fastq.gz --second_fastq /home/user01/milestones_6/metagenomics_custom_pipeline/HYBRID_Pipeline/Illumina/SRR23926929_2.fastq.gz --output_dir /home/user01/milestones_6/metagenomics_custom_pipeline/nextflow_workflow/Meta_Pipeline/MetaAMR_Tracker/HYBRID_Nextflow_output --nanopore_fastq /home/user01/milestones_6/metagenomics_custom_pipeline/HYBRID_Pipeline/Nanopore/SRR23926926.fastq.gz --adapters /home/user01/milestones_6/metagenomics_custom_pipeline/Trimmomatic/TruSeq3-PE.fa --kraken2_db /home/user01/milestones_6/metagenomics_custom_pipeline/kraken2/k2_plus_small_db_8gb --gtdbtk_db /home/user01/milestones_6/metagenomics_custom_pipeline/GTDB_tk/gtdbtk_r214_data/release214 --virsorter2_db /home/user01/milestones_6/metagenomics_custom_pipeline/virsorter2_DOCKER/db --utax_reference_db /home/user01/milestones_6/metagenomics_custom_pipeline/VSEARCH_DOCKER/utax_reference_dataset_25.07.2023.fasta -resume
+
 
 
 
