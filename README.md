@@ -131,39 +131,66 @@ This guide provides instructions on setting up and running a Nextflow pipeline f
 ### 1. Nextflow Configuration
 Create a `nextflow.config` file in your pipeline's root directory with the following content to enable Docker and set the DSL version:
 
-```nextflow
-nextflow.enable.dsl=2
 
-docker {
-    enabled = true
+
+```docker {
+enabled = true
+}
+
+//executor {
+  // queueSize = 1
+//}
+
+process {
+    memory = '56 GB'
+}
+
+params {
+
+
+### DOWNLOAD ALL NECESSSARY DATABASE FILES AND KEEP THEM IN THE DATABASES FOLDER STORED LOCALLY ON YOUR SYSTME SOMEWHERE...
+
+adapters = "${baseDir}/databases/TruSeq3-PE.fa"
+kraken2_db = "${baseDir}/databases/k2_plus_small_db_8gb"
+utax_reference_db = "${baseDir}/databases/utax_reference_dataset_25.07.2023.fasta"
+virsorter2_db = "${baseDir}/databases/virsorter2_DOCKER/db"
+gtdbtk_db = "${baseDir}/databases/gtdbtk_r214_data/release214"
+
+
 }
 
 
 ## Running the Pipeline
 
-Ensure Docker or Singularity is installed and configured.
+Ensure Docker is installed and configured with a Nextflow config file.
 
 To run the pipeline, use the following command structure, replacing `<placeholders>` with appropriate paths or values:
 
-```bash
-nextflow run [Your Pipeline Script Name].nf --first_fastq <path_to_first_fastq> --second_fastq <path_to_second_fastq> --output_dir <path_to_output_directory> --adapters <path_to_adapters_file> --kraken2_db <path_to_kraken2_db> --utax_reference_db <path_to_utax_db> --virsorter2_db <path_to_virsorter2_db> --gtdbtk_db <path_to_gtdbtk_db>
+
+## COMMAND LINE RUN EXAMPLE...
 
 
-To run the pipeline, use the following command structure, replacing <placeholders> with appropriate paths or values:
+##################  *******************  Command line for ILLUMINA  **************************##########################
 
-// Define your processes here
-// Example:
-process fastQC {
-    container 'staphb/fastqc:latest'
-    // ... rest of the fastQC process
-}
-// Add other processes similarly
 
-// Define the workflow
-workflow {
-    // Your workflow steps go here
-}
+nextflow run tracker_test_pipeline_2.nf --first_fastq /home/user01/milestones_6/metagenomics_custom_pipeline/fastq_files/DRR274968_1.fastq.gz --second_fastq /home/user01/milestones_6/metagenomics_custom_pipeline/fastq_files/DRR274968_2.fastq.gz --output_dir /home/user01/milestones_6/metagenomics_custom_pipeline/nextflow_workflow/Meta_Pipeline/MetaAMR_Tracker/Nextflow_output_directory -resume
 
+
+
+##################  *******************  Command line for NANOPORE  **************************##########################
+
+
+
+nextflow run NANOPORE_Nexflow_Pipeline.nf --nanopore_fastq /home/user01/milestones_6/CAMISIM_PROGRAM/genomes_fasta_files/NANO_SIM_PROGRAM/NanoSim_1k_OUTPUT_TEST_sample0_aligned_reads.fastq.gz --output_dir /home/user01/milestones_6/metagenomics_custom_pipeline/nextflow_workflow/Meta_Pipeline/MetaAMR_Tracker/NANOPORE_NEXTFLOW_OUTPUT -resume
+
+
+
+##################  *******************  Command line for HYBRID  **************************##########################
+
+nextflow run HYBRID_Meta_Tracker_Pipeline.nf --first_fastq /home/user01/milestones_6/metagenomics_custom_pipeline/HYBRID_Pipeline/Illumina/SRR23926929_1.fastq.gz --second_fastq /home/user01/milestones_6/metagenomics_custom_pipeline/HYBRID_Pipeline/Illumina/SRR23926929_2.fastq.gz --output_dir /home/user01/milestones_6/metagenomics_custom_pipeline/nextflow_workflow/Meta_Pipeline/MetaAMR_Tracker/HYBRID_Nextflow_output -resume
+
+
+```
 
 ## Important Note on Nextflow DSL Version
 
@@ -376,31 +403,9 @@ workflow {
     gtdbtk_output = GTDBTK(dastool_output_bins, params.gtdbtk_db)
 }
 
-## COMMAND LINE RUN EXAMPLE...
 
 
-#######           To run the command line. PUT THIS IN THE COMMAND LINE TO RUN IT for ILLUMINA   #######
-nextflow run tracker_test_pipeline_2.nf --first_fastq /home/user01/milestones_6/metagenomics_custom_pipeline/fastq_files/DRR274968_1.fastq.gz --second_fastq /home/user01/milestones_6/metagenomics_custom_pipeline/fastq_files/DRR274968_2.fastq.gz --output_dir /home/user01/milestones_6/metagenomics_custom_pipeline/nextflow_workflow/Meta_Pipeline/MetaAMR_Tracker/Nextflow_output_directory --adapters /home/user01/milestones_6/metagenomics_custom_pipeline/Trimmomatic/TruSeq3-PE.fa --kraken2_db /home/user01/milestones_6/metagenomics_custom_pipeline/kraken2/k2_plus_small_db_8gb --utax_reference_db /home/user01/milestones_6/metagenomics_custom_pipeline/VSEARCH_DOCKER/utax_reference_dataset_25.07.2023.fasta --virsorter2_db /home/user01/milestones_6/metagenomics_custom_pipeline/virsorter2_DOCKER/db --gtdbtk_db /home/user01/milestones_6/metagenomics_custom_pipeline/GTDB_tk/gtdbtk_r214_data/release214 -resume
-
-
-
-
-##################  *******************  Command line for NANOPORE  **************************##########################
-
-
-
-nextflow run NANOPORE_Nexflow_Pipeline.nf --nanopore_fastq /home/user01/milestones_6/CAMISIM_PROGRAM/genomes_fasta_files/NANO_SIM_PROGRAM/NanoSim_1k_OUTPUT_TEST_sample0_aligned_reads.fastq.gz --output_dir /home/user01/milestones_6/metagenomics_custom_pipeline/nextflow_workflow/Meta_Pipeline/MetaAMR_Tracker/NANOPORE_NEXTFLOW_OUTPUT --kraken2_db /home/user01/milestones_6/metagenomics_custom_pipeline/kraken2/k2_plus_small_db_8gb --gtdbtk_db /home/user01/milestones_6/metagenomics_custom_pipeline/GTDB_tk/gtdbtk_r214_data/release214 --utax_reference_db /home/user01/milestones_6/metagenomics_custom_pipeline/VSEARCH_DOCKER/utax_reference_dataset_25.07.2023.fasta --virsorter2_db /home/user01/milestones_6/metagenomics_custom_pipeline/virsorter2_DOCKER/db  -resume
-
-
-
-
-
-##################  *******************  Command line for HYBRID  **************************##########################
-
-nextflow run HYBRID_Meta_Tracker_Pipeline.nf --first_fastq /home/user01/milestones_6/metagenomics_custom_pipeline/HYBRID_Pipeline/Illumina/SRR23926929_1.fastq.gz --second_fastq /home/user01/milestones_6/metagenomics_custom_pipeline/HYBRID_Pipeline/Illumina/SRR23926929_2.fastq.gz --output_dir /home/user01/milestones_6/metagenomics_custom_pipeline/nextflow_workflow/Meta_Pipeline/MetaAMR_Tracker/HYBRID_Nextflow_output --nanopore_fastq /home/user01/milestones_6/metagenomics_custom_pipeline/HYBRID_Pipeline/Nanopore/SRR23926926.fastq.gz --adapters /home/user01/milestones_6/metagenomics_custom_pipeline/Trimmomatic/TruSeq3-PE.fa --kraken2_db /home/user01/milestones_6/metagenomics_custom_pipeline/kraken2/k2_plus_small_db_8gb --gtdbtk_db /home/user01/milestones_6/metagenomics_custom_pipeline/GTDB_tk/gtdbtk_r214_data/release214 --virsorter2_db /home/user01/milestones_6/metagenomics_custom_pipeline/virsorter2_DOCKER/db --utax_reference_db /home/user01/milestones_6/metagenomics_custom_pipeline/VSEARCH_DOCKER/utax_reference_dataset_25.07.2023.fasta -resume
-
-
-# Documentation and Performance Metrics for Established Workflows
+                   #####*****                   Documentation and Performance Metrics for Established Workflows      ######********
 
 ## Introduction
 
