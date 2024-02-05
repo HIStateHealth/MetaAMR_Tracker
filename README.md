@@ -7,6 +7,10 @@ Users must specify the type of reads (Illumina, Nanopore, or Hybrid) they wish t
 From quality control to contig assembly and resistance gene identification, MetaAMR-Tracker integrates state-of-the-art tools like FastQC, MEGAHIT, MetaPhlAn, and ResFinder. The pipeline delivers a holistic view of the microbial resistome, providing valuable insights into the prevalence and distribution of AMR genes in environmental samples.
 
 
+![image](https://github.com/HIStateHealth/MetaAMR_Tracker/assets/138935158/0f595650-5f7e-403d-b6b3-a4c25f85e44d)
+
+
+
 ![image](https://github.com/HIStateHealth/MetaAMR_Tracker/assets/138935158/f834b920-49aa-4d3e-9dec-4e2fcb19e25c)
 
 
@@ -190,7 +194,11 @@ nextflow run NANOPORE_Nexflow_Pipeline.nf --nanopore_fastq /home/user01/mileston
 nextflow run HYBRID_Meta_Tracker_Pipeline.nf --first_fastq /home/user01/milestones_6/metagenomics_custom_pipeline/HYBRID_Pipeline/Illumina/SRR23926929_1.fastq.gz --second_fastq /home/user01/milestones_6/metagenomics_custom_pipeline/HYBRID_Pipeline/Illumina/SRR23926929_2.fastq.gz --output_dir /home/user01/milestones_6/metagenomics_custom_pipeline/nextflow_workflow/Meta_Pipeline/MetaAMR_Tracker/HYBRID_Nextflow_output -resume
 
 
+
+
 ```
+
+
 
 ## Important Note on Nextflow DSL Version
 
