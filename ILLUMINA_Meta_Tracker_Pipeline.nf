@@ -34,6 +34,7 @@ process fastQC {
 process Trimmomatic {
 
     container 'staphb/trimmomatic:latest'
+    publishDir "${params.output_dir}/trimmomatic_output", mode: 'copy'
 
     input:
     path first_fastq
@@ -51,13 +52,13 @@ process Trimmomatic {
     trimmomatic_output/paired_R1.fastq.gz trimmomatic_output/forward_unpaired.fq.gz \\
     trimmomatic_output/paired_R2.fastq.gz trimmomatic_output/reverse_unpaired.fq.gz \\
     ILLUMINACLIP:${adapters}:2:30:10 LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:36
-    cp -r trimmomatic_output ${params.output_dir}/
     """
 }
 
 process MegaHit {
 
         container 'nanozoo/megahit:latest'
+        publishDir "${params.output_dir}/megahit_output", mode: 'copy'
 	
 	input:
 	path forward_paired
@@ -72,15 +73,15 @@ process MegaHit {
 
 	script:
 	"""
-	mkdir -p ${params.output_dir}/megahit_output
+	mkdir -p megahit_output
 	megahit -1 ${forward_paired} -2 ${reverse_paired} -o megahit_output_${task.process.hashCode()}
-	cp megahit_output_${task.process.hashCode()}/final.contigs.fa ${params.output_dir}/megahit_output/
 	"""
 	}
 	
 process QUAST {
 
     container 'staphb/quast:latest'
+    publishDir "${params.output_dir}/quast_output", mode: 'copy'
 
     input:
     path contigs
@@ -92,41 +93,47 @@ process QUAST {
     """
     mkdir -p quast_output
     metaquast.py ${contigs} -o ./quast_output
-    cp -r ./quast_output ${params.output_dir}/
     """
 }	
 
 process Kraken2 {
 
+    container 'staphb/kraken2:latest'
+    publishDir "${params.output_dir}/kraken2_output", mode: 'copy'
+
+
     input:
     path forward_paired
     path reverse_paired
     path kraken2_db
+    
+    output:
+    path "kraken2_output", emit: kraken2_report
 
     script:
     """
-    mkdir -p ${params.output_dir}/kraken2_output
-    kraken2 --db ${kraken2_db} --paired ${forward_paired} ${reverse_paired} --report ${params.output_dir}/kraken2_output/kraken2_report.txt
+    mkdir -p kraken2_output
+    kraken2 --db ${kraken2_db} --paired ${forward_paired} ${reverse_paired} --report kraken2_output/kraken2_report.txt
     """
 }
-
 
 process Metaphlan_reads {
     
     container 'stang/metaphlan4:v1'
-    publishDir "${params.output_dir}", mode: 'copy'
+    publishDir "${params.output_dir}/metaphlan_output", mode: 'copy'
 
     input:
     path forward_paired
     path reverse_paired
 
     output:
-    path "metaphlan_profile_reads.txt", emit: metaphlan_profile_reads
-    path "metaphlan_bowtie2.txt", emit: bowtie2_output
+    path "metaphlan_output/metaphlan_profile_reads.txt", emit: metaphlan_profile_reads
+    path "metaphlan_output/metaphlan_bowtie2.txt", emit: bowtie2_output
 
     script:
     """
-    metaphlan ${forward_paired},${reverse_paired} --input_type fastq --bowtie2out metaphlan_bowtie2.txt --nproc 10 > metaphlan_profile_reads.txt
+    mkdir -p metaphlan_output
+    metaphlan ${forward_paired},${reverse_paired} --input_type fastq --bowtie2out metaphlan_output/metaphlan_bowtie2.txt --nproc 10 > metaphlan_output/metaphlan_profile_reads.txt
     """
 }
 	
