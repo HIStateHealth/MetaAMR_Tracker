@@ -162,7 +162,7 @@ process Kraken2_hybrid {
     kraken2 --db ${kraken2_db} --output kraken2_hybrid_output/kraken2_hybrid_output.txt --report kraken2_hybrid_output/kraken2_hybrid_report.txt ${medaka_contigs}
     """
 }
-
+/*
 process Metaphlan_hybrid {
 
 	container 'stang/metaphlan4:v1'
@@ -180,7 +180,7 @@ process Metaphlan_hybrid {
 	metaphlan ${medaka_contigs} --input_type fasta > metaphlan_hybrid_output/metaphlan_hybrid_profile_contigs.txt
 	"""
 	}
-
+*/
 
 process Semibin2_hybrid {
 	container 'bladerunner2945/semibin2_minimap2_samtools:latest'
@@ -274,7 +274,7 @@ process Vsearch_hybrid  {
 	path utax_reference_db
 	
 	output:
-	path "vsearch_fungi_output/output_hybrid_fungi_taxa_bins.txt", emit: vsearch__hybrid_fungi_output
+	path "vsearch_fungi_output/output_hybrid_fungi_taxa_bins.txt", emit: vsearch_hybrid_fungi_output
 	
 	script:
 	"""
@@ -355,7 +355,7 @@ process VirSorter2_hybrid {
 
 	script:
 	"""
-	mkdir -p virsorter2_hybrid_output_files
+	mkdir -p virsorter2_hybrid_output
 	virsorter run -i ${merged_bins_fa} -w virsorter2_hybrid_output --provirus-off --max-orf-per-seq 10 all -j 12 --db-dir ${virsorter2_db} --min-score 0.9
 	"""
 	}      
@@ -371,7 +371,7 @@ workflow  {
     medaka_results = medaka_hybrid(metaspades_results.metaspades_hybrid_contigs,params.nanopore_fastq)
     quast_results = QUAST_hybrid(medaka_results.medaka_contigs)
     kraken2_results = Kraken2_hybrid(medaka_results.medaka_contigs, params.kraken2_db)
-    metaphlan_results = Metaphlan_hybrid(medaka_results.medaka_contigs)
+    //metaphlan_results = Metaphlan_hybrid(medaka_results.medaka_contigs)
     semibin2_results = Semibin2_hybrid(medaka_results.medaka_contigs, params.nanopore_fastq)
     checkm_results = CheckM_hybrid(semibin2_results.semibin2_hybrid_bins)
     gtdbtk_results = GTDBTK_hybrid(semibin2_results.semibin2_hybrid_bins, params.gtdbtk_db)
