@@ -117,11 +117,10 @@ process Kraken2 {
     kraken2 --db ${kraken2_db} --output kraken2_output/kraken2_output.txt --report kraken2_output/kraken2_report.txt ${medaka_contigs}
     """
 }
-/*
+
 process Metaphlan_nanopore {
 
 
-	memory '56 GB'
 	container 'stang/metaphlan4:v1'
 	publishDir "${params.output_dir}/metaphlan_output", mode: 'copy'
 
@@ -137,7 +136,6 @@ process Metaphlan_nanopore {
 	metaphlan ${medaka_contigs} --input_type fasta > metaphlan_output/metaphlan_profile_nanopore_contigs.txt
 	"""
 	}
-*/
 
 
 process Semibin2_nanopore {
@@ -331,7 +329,7 @@ workflow  {
     medaka_results = medaka(flye_results.flye_contigs, params.nanopore_fastq)
     quast_results = QUAST(medaka_results.medaka_contigs)
     kraken2_results = Kraken2(medaka_results.medaka_contigs, params.kraken2_db)
-    // metaphlan4_results = Metaphlan_nanopore(medaka_results.medaka_contigs)
+    //metaphlan4_results = Metaphlan_nanopore(medaka_results.medaka_contigs)
     semibin2_results = Semibin2_nanopore(medaka_results.medaka_contigs, params.nanopore_fastq)
     checkM_results = CheckM_nanopore(semibin2_results.semibin2_nanopore_bins)
     gtdbtk_results = GTDBTK_nanopore(semibin2_results.semibin2_nanopore_bins, params.gtdbtk_db)
