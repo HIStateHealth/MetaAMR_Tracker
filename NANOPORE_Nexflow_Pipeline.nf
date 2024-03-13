@@ -80,6 +80,9 @@ process medaka {
     """
 }
 
+
+
+
 process QUAST {
 
     container 'staphb/quast:latest'
@@ -101,7 +104,7 @@ process QUAST {
 
 process Kraken2 {
 
-    container 'staphb/kraken2:latest'
+    container 'bladerunner2945/kraken2_krona:latest'
     publishDir "${params.output_dir}/kraken2_output", mode: 'copy'
 
     input:
@@ -115,6 +118,7 @@ process Kraken2 {
     """
     mkdir -p kraken2_output
     kraken2 --db ${kraken2_db} --output kraken2_output/kraken2_output.txt --report kraken2_output/kraken2_report.txt ${medaka_contigs}
+    ktImportText -o kraken2_output/kraken2_nanopore_krona_chart.html kraken2_output/kraken2_report.txt
     """
 }
 
@@ -136,8 +140,7 @@ process Metaphlan_nanopore {
 	metaphlan ${medaka_contigs} --input_type fasta > metaphlan_output/metaphlan_profile_nanopore_contigs.txt
 	"""
 	}
-
-
+	
 process Semibin2_nanopore {
 	container 'bladerunner2945/semibin2_minimap2_samtools:latest'
 
@@ -146,7 +149,8 @@ process Semibin2_nanopore {
 	path nanopore_fastq
 
 	output:
-	path "semibin2_output/semibin2_bins/output_bins", emit: semibin2_nanopore_bins
+	path "semibin2_output/semibin2_bins/output_bins", emit: semibin2_output_bins
+	path "semibin2_output/semibin2_bins/contig_bins.tsv", emit: semibin2_bins_tsv
 
 	script:
 	"""
@@ -155,16 +159,71 @@ process Semibin2_nanopore {
 	samtools view -bS alignment_consensus.sam | samtools sort -o alignment_consensus.sort.bam
 	samtools index alignment_consensus.sort.bam
 	SemiBin2 single_easy_bin -i ${medaka_contigs} -b alignment_consensus.sort.bam -o semibin2_output/semibin2_bins --environment wastewater
-
-	for bin in semibin2_output/semibin2_bins/output_bins/*.fa.gz; do
-	gunzip \$bin
-	done
-
+	
+	sed -i '1d' semibin2_output/semibin2_bins/contig_bins.tsv
 	chmod -R 777 semibin2_output/semibin2_bins
-
+	
 	cp -r semibin2_output/semibin2_bins ${params.output_dir}
 	"""
 	}
+	
+process metawrapBinning_nanopore {
+
+    container 'pnatarajan84/metawrap_1.3.2_binning_fastq_gz_modified:latest'
+    publishDir "${params.output_dir}/metawrap_output", mode: 'copy'
+
+    input:
+    path medaka_contigs
+    path nanopore_fastq
+
+    output:
+    path "metawrap_output/*", emit: metawrap_output_files
+    path "metawrap_output/concoct_bins/*_bins_contigs.tsv", emit: concoct_bins_tsv
+    path "metawrap_output/maxbin2_bins/*_bins_contigs.tsv", emit: maxbin2_bins_tsv
+    path "metawrap_output/metabat2_bins/*_bins_contigs.tsv", emit: metabat2_bins_tsv
+
+    script:
+    """
+    metawrap binning -o metawrap_output -t 40 -a ${medaka_contigs} --metabat2 --maxbin2 --concoct --single-end ${nanopore_fastq}
+    for dir in metawrap_output/concoct_bins metawrap_output/maxbin2_bins metawrap_output/metabat2_bins; do
+        if [ -d "\$dir" ]; then
+           bin_tool=\$(basename \$dir)
+           tsv_file="\$dir/\${bin_tool}_bins_contigs.tsv"
+           for bin_file in "\$dir"/*.fa; do
+               bin_name=\$(basename \$bin_file .fa);
+               grep "^>" \$bin_file | sed "s/>//" | awk -v bin="\$bin_name" '{print \$1 "\t" bin}' >> \$tsv_file;
+           done;
+       fi;
+    done
+    """
+}	
+	
+process DAStool_nanopore {
+    
+    container 'bladerunner2945/dastools1.1.6:latest'
+    publishDir "${params.output_dir}/dastool_output", mode: 'copy'
+
+    input:
+    path concoct_bins_tsv
+    path maxbin2_bins_tsv
+    path semibin2_bins_tsv
+    path medaka_contigs
+
+    output:
+    path "dastool_output_DASTool_bins", emit: dastool_output_bins
+
+    script:
+    """
+    # Ensure the output directory exists
+    mkdir -p dastool_output
+
+    # Run DAS_Tool
+    DAS_Tool -i ${concoct_bins_tsv},${maxbin2_bins_tsv},${semibin2_bins_tsv} -l concoct,maxbin2,semibin2 -c ${medaka_contigs} -o dastool_output --write_bin_evals --threads 20 --write_bins --write_unbinned
+
+    """
+}	
+
+
 
 process CheckM_nanopore {
 
@@ -172,7 +231,7 @@ process CheckM_nanopore {
 	publishDir "${params.output_dir}/checkm_output", mode: 'copy'
 
 	input:
-	path semibin2_nanopore_bins
+	path dastool_output_bins
 
 	output:
 	path "checkm_output", emit: checkm_output_files
@@ -180,7 +239,7 @@ process CheckM_nanopore {
 	script:
 	"""
 	mkdir -p checkm_output
-	checkm lineage_wf -x fa ${semibin2_nanopore_bins} checkm_output
+	checkm lineage_wf -x fa ${dastool_output_bins} checkm_output
 	"""
 	}
 
@@ -190,7 +249,7 @@ process GTDBTK_nanopore {
 	publishDir "${params.output_dir}/gtdbtk_output", mode: 'copy'
 
 	input:
-	path semibin2_nanopore_bins
+	path dastool_output_bins
 	path gtdbtk_db
 
 	output:
@@ -199,7 +258,7 @@ process GTDBTK_nanopore {
 	script:
 	"""
 	export GTDBTK_DATA_PATH=${gtdbtk_db}
-	gtdbtk classify_wf --genome_dir ${semibin2_nanopore_bins} --out_dir gtdbtk_output --skip_ani_screen --cpus 20 --extension fa
+	gtdbtk classify_wf --genome_dir ${dastool_output_bins} --out_dir gtdbtk_output --skip_ani_screen --cpus 20 --extension fa
 	"""
 	}
 	
@@ -209,14 +268,14 @@ process PrependBinNames_nanopore {
 	    publishDir "${params.output_dir}/prepend_bin_names_output", mode: 'copy'
 
 	    input: 
-	    path semibin2_nanopore_bins
+	    path dastool_output_bins
 
 	    output:
 	    path "merged_bins.fa", emit: merged_bins_fa
 
 	    script:
 	    """
-	    prepend_bin_names.py ${semibin2_nanopore_bins} merged_bins.fa
+	    prepend_bin_names.py ${dastool_output_bins} merged_bins.fa
 	    """
 	}
 
@@ -329,11 +388,13 @@ workflow  {
     medaka_results = medaka(flye_results.flye_contigs, params.nanopore_fastq)
     quast_results = QUAST(medaka_results.medaka_contigs)
     kraken2_results = Kraken2(medaka_results.medaka_contigs, params.kraken2_db)
-    //metaphlan4_results = Metaphlan_nanopore(medaka_results.medaka_contigs)
+    //metaphlan4_results = Metaphlan_nanopore(medaka_results.medaka_contigs) 
     semibin2_results = Semibin2_nanopore(medaka_results.medaka_contigs, params.nanopore_fastq)
-    checkM_results = CheckM_nanopore(semibin2_results.semibin2_nanopore_bins)
-    gtdbtk_results = GTDBTK_nanopore(semibin2_results.semibin2_nanopore_bins, params.gtdbtk_db)
-    prepend_results = PrependBinNames_nanopore(semibin2_results.semibin2_nanopore_bins)
+    binning_results = metawrapBinning_nanopore(medaka_results.medaka_contigs, params.nanopore_fastq)
+    dastool_results = DAStool_nanopore(binning_results.concoct_bins_tsv, binning_results.maxbin2_bins_tsv, semibin2_results.semibin2_bins_tsv, medaka_results.medaka_contigs)
+    checkM_results = CheckM_nanopore(dastool_results.dastool_output_bins)
+    gtdbtk_results = GTDBTK_nanopore(dastool_results.dastool_output_bins, params.gtdbtk_db)
+    prepend_results = PrependBinNames_nanopore(dastool_results.dastool_output_bins)
     vsearch_results = Vsearch_nanopore(prepend_results.merged_bins_fa,params.utax_reference_db)
     AMRfinder_results = AMRfinder_nanopore(prepend_results.merged_bins_fa)
     deeparg_results = Deep_Arg_nanopore(prepend_results.merged_bins_fa)
