@@ -374,7 +374,7 @@ workflow  {
     checkm_output = CheckM(dastool_output_bins)
     metaphlan_profile_reads = Metaphlan_reads(trimmed_reads.forward_paired, trimmed_reads.reverse_paired)
     merged_bins = PrependBinNames(dastool_output_bins)
-    vsearch_output = Vsearch(merged_bins, params.utax_reference_db)
+    ##vsearch_output = Vsearch(merged_bins, params.utax_reference_db)
     amrfinder_output = AMRfinder(merged_bins)
     deeparg_results = Deep_Arg(merged_bins)
     plasmidfinder_output = PlasmidFinder(merged_bins)
