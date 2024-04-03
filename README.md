@@ -103,7 +103,7 @@ Virsorter2 detects viral sequences within metagenomic data, including prophages 
 ## Plasmidfinder
 Plasmidfinder identifies plasmid sequences in bacterial genomes, playing a pivotal role in understanding and monitoring the dissemination of resistance within and across microbial communities, as plasmids are key vectors for the horizontal transfer of antimicrobial resistance genes.
 
-
+NANOPORE SIDE****
 
 
 ******### <u>This Markdown documentation is formatted to clearly present each step of your pipeline, including the function and container used. The "Running the Pipeline" section provides users with instructions on how to execute the pipeline.</u>
