@@ -80,20 +80,21 @@ process MegaHit {
 	
 process QUAST {
 
-    container 'staphb/quast:latest'
-    publishDir "${params.output_dir}/quast_output", mode: 'copy'
+	    container 'staphb/quast:latest'
+	    publishDir "${params.output_dir}/quast_output", mode: 'copy'
 
-    input:
-    path contigs
+	    input:
+	    path contigs
 
-    output:
-    path("./quast_output"), emit: quast_report
+	    output:
+	    path("./quast_output"), emit: quast_report
 
-    script:
-    """
-    mkdir -p quast_output
-    metaquast.py ${contigs} -o ./quast_output
-    """
+	    script:
+	    """
+	    mkdir -p quast_output
+	    metaquast.py ${contigs} -o ./quast_output
+	    
+	    """
 }	
 
 process Kraken2 {
@@ -276,11 +277,13 @@ process Vsearch  {
 
 process AMRfinder {
 
-	container 'staphb/ncbi-amrfinderplus:latest'
+	container 'bladerunner2945/amr_kma_heatmap:latest'
 	publishDir "${params.output_dir}/amrfinder_output", mode: 'copy'
 
 	input:
 	path merged_bins_fa
+	path forward_paired
+	path reverse_paired
 
 	output:
 	path "amrfinder_output/amr_finder_report.txt", emit: amr_finder_report
@@ -289,6 +292,10 @@ process AMRfinder {
 	"""
 	mkdir -p amrfinder_output
 	amrfinder -n ${merged_bins_fa} -o amrfinder_output/amr_finder_report.txt
+	kma index -i /data/AMR_CDS.fasta -o amr_kma_index 
+	kma -ipe ${forward_paired}  ${reverse_paired} -o amr_kma_OUTPUT -t_db amr_kma_index -ef 
+	python3 /scripts/kma_to_amr_abundance.py amr_kma_OUTPUT.mapstat amr_kma_OUTPUT.res amrfinder_output/amr_abundance.csv
+	python3 /scripts/amr_heatmap.py amrfinder_output/amr_abundance.csv  amrfinder_output/amr_abundance_heatmap_top_genes.jpg
 	"""
 	}
 	
