@@ -58,67 +58,51 @@ isted in the Nextflow script
     ```bash
     cd [I will put my Project Directory here]
     ```
-## Pipeline Steps ILLUMINA SIDE****
 
-### FastQC
-- **Function**: Performs quality control checks on raw sequence data.
-- **Container**: `staphb/fastqc:latest`
+# Metagenomic Analysis Programs for Antimicrobial Gene Surveillance ILLUMINA SIDE****
 
-### Trimmomatic
-- **Function**: Trims and removes adapters from sequencing data.
-- **Container**: `staphb/trimmomatic:latest`
+## FastQC
+FastQC provides a quick and intuitive overview of data quality, assessing sequencing reads for various quality metrics, including base quality, sequence duplication levels, and overrepresented sequences. This step is crucial for identifying potential issues early in the pipeline, ensuring that subsequent analyses are based on high-quality data.
 
-### MegaHit
-- **Function**: Assembles high-quality reads into contigs.
-- **Container**: `nanozoo/megahit:latest`
+## Trimmomatic
+Trimmomatic performs read trimming and filtering, removing adapters and low-quality bases. This step is essential for eliminating sequencing artifacts that could interfere with downstream analyses, such as assembly and gene prediction, thus improving the accuracy of antimicrobial resistance gene detection.
 
-### QUAST
-- **Function**: Assesses the quality of genome assemblies.
-- **Container**: `staphb/quast:latest`
+## MegaHit
+MegaHit assembles high-throughput sequencing reads into longer contiguous sequences (contigs). In metagenomics, it enables the reconstruction of microbial genomes from mixed community samples. This step is foundational for identifying the microbial composition and potential antimicrobial resistance genes within a sample.
 
-### Kraken2
-- **Function**: Taxonomically classifies sequencing reads.
-- **Script**: `kraken2 --db ${kraken2_db} --paired ${forward_paired} ${reverse_paired} --report ${params.output_dir}/kraken2_output/kraken2_report.txt`
+## MetaQUAST
+MetaQUAST evaluates the quality of metagenomic assemblies, providing metrics like N50, L50, and the number of misassemblies, offering insights into the assembly's completeness and accuracy. High-quality assemblies are critical for reliable identification and annotation of genes related to antimicrobial resistance.
 
-### MetaPhlAn
-- **Function**: Profiles microbial community composition.
-- **Container**: `stang/metaphlan4:v1`
+## Metaphlan4
+Metaphlan4 specializes in profiling the composition of microbial communities from metagenomic sequencing data, using unique clade-specific marker genes for precise taxonomic assignment. This information is pivotal for understanding microbial diversity and detecting potential reservoirs of antimicrobial resistance.
 
-### MetaWRAP (Binning)
-- **Function**: Bins contigs into genome bins.
-- **Container**: `pnatarajan84/metawrap_1.3.2_binning_fastq_gz_modified:latest`
+## Kraken2
+Kraken2 rapidly assigns taxonomic labels to short DNA sequences, offering insights into the microbial composition of a sample. This step is vital for antimicrobial gene surveillance as it helps identify which microbes carry resistance genes, contributing to our understanding of resistance spread and evolution.
 
-### DAS Tool
-- **Function**: Refines and selects genome bins.
-- **Container**: `bladerunner2945/dastools1.1.6:latest`
+## Metawrap (using Maxbin2, Metabat2, CONCOCT)
+Metawrap integrates tools like Maxbin2, Metabat2, and CONCOCT for metagenomic binning, grouping contigs into bins representing potential genomes. This process is crucial for resolving community structure and identifying microbes that may harbor antimicrobial resistance genes.
 
-### CheckM
-- **Function**: Evaluates the quality of genome bins.
-- **Container**: `nanozoo/checkm:1.1.3--c79a047`
+## DAS TOOL
+DAS TOOL integrates binning results from multiple sources to optimize the quality and completeness of metagenomic bins. By selecting the best bins across different algorithms, it enhances the accuracy of identifying microbes and their antimicrobial resistance genes within complex samples.
 
-### GTDB-Tk
-- **Function**: Taxonomically classifies bins using the GTDB.
-- **Container**: `nanozoo/gtdbtk:2.3.2--641ec99`
+## CheckM
+CheckM assesses metagenomic bins for completeness and contamination, ensuring that genomic reconstructions used in antimicrobial resistance gene analysis are reliable.
 
-### PrependBinNames
-- **Function**: Prepares bins for downstream analysis.
-- **Container**: `bladerunner2945/prepend_bin_names:latest`
+## GTDB-tk
+GTDB-tk assigns taxonomy to microbial genomes based on the Genome Taxonomy Database (GTDB), facilitating accurate tracking of antimicrobial resistance genes across different taxa.
 
-### VSEARCH
-- **Function**: Classifies fungal taxa.
-- **Container**: `manutamminen/vsearch:v1.28`
+## VSEARCH
+VSEARCH is used for sequence searching and clustering, often employed in creating non-redundant sequence databases. It helps identify unique resistance genes and their variants, aiding in the detection of emerging resistance mechanisms.
 
-### AMRfinder
-- **Function**: Identifies antimicrobial resistance genes.
-- **Container**: `staphb/ncbi-amrfinderplus:latest`
+## AMR Finder Plus
+AMR Finder Plus identifies antimicrobial resistance genes by comparing sequences against a curated database. This tool is instrumental in pinpointing specific resistance genes, their variants, and associated mechanisms, providing insights into the resistance profiles of microbial communities.
 
-### PlasmidFinder
-- **Function**: Identifies plasmids.
-- **Container**: `staphb/plasmidfinder:latest`
+## Virsorter2
+Virsorter2 detects viral sequences within metagenomic data, including prophages within microbial genomes. Understanding these elements is crucial for grasping horizontal gene transfer mechanisms, which can contribute to the spread of antimicrobial resistance.
 
-### VirSorter2
-- **Function**: Identifies and classifies viral sequences.
-- **Container**: `staphb/virsorter2:latest`
+## Plasmidfinder
+Plasmidfinder identifies plasmid sequences in bacterial genomes, playing a pivotal role in understanding and monitoring the dissemination of resistance within and across microbial communities, as plasmids are key vectors for the horizontal transfer of antimicrobial resistance genes.
+
 
 
 
