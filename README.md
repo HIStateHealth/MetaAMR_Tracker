@@ -91,6 +91,23 @@ CheckM assesses metagenomic bins for completeness and contamination, ensuring th
 ## GTDB-tk
 GTDB-tk assigns taxonomy to microbial genomes based on the Genome Taxonomy Database (GTDB), facilitating accurate tracking of antimicrobial resistance genes across different taxa.
 
+## Prepend Python Program
+
+The Prepend Program is designed to enhance the traceability and manageability of contigs across different bins in metagenomic analyses. It does so by modifying the identifiers (IDs) of the contigs to include the name of the bin they belong to. This modification aids in downstream analyses where the origin of each contig is crucial for understanding the distribution of features, such as antibiotic resistance genes or specific metabolic capabilities, across the microbial communities present in a sample.
+
+## How It Works
+The program takes as input:
+- A directory containing FASTA files, where each file represents a bin (a collection of contigs belonging to a putative genome) produced by binning tools like CONCOCT, MaxBin2, or MetaBAT2.
+- The desired output directory for the modified FASTA files.
+
+For each FASTA file (representing a bin), the program reads through the file and prepends the bin name to each contig's ID. For example, if a contig originally has the ID `>k141_393177` and it's contained in a file named `CONCOCT_bin.3.fa`, the modified ID will be `>CONCOCT_bin.3_k141_393177`. This process is repeated for all contigs across all bins.
+
+## Output
+The output of the Prepend Program is a set of modified FASTA files, one for each input bin, where the IDs of the contigs are enriched with their corresponding bin names. These modified files are stored in the specified output directory. Optionally, the program can merge all the modified bins into a single FASTA file, facilitating analyses that require the combined dataset rather than individual bins. This merged file simplifies the input for various genomic analysis tools that may not support multi-file input or that benefit from a holistic view of the metagenome.
+
+This approach ensures that each contig can be easily traced back to its original bin, enhancing the interpretability of results from downstream analytical processes.
+
+
 ## VSEARCH
 VSEARCH is used for sequence searching and clustering, often employed in creating non-redundant sequence databases. It helps identify unique resistance genes and their variants, aiding in the detection of emerging resistance mechanisms.
 
@@ -106,7 +123,6 @@ Plasmidfinder identifies plasmid sequences in bacterial genomes, playing a pivot
 NANOPORE SIDE****
 
 
-******### <u>This Markdown documentation is formatted to clearly present each step of your pipeline, including the function and container used. The "Running the Pipeline" section provides users with instructions on how to execute the pipeline.</u>
 
 
 # Nextflow Pipeline Guide
