@@ -28,9 +28,6 @@ process fastQC {
     """
 }
 
-
-
-
 process Trimmomatic {
 
     container 'staphb/trimmomatic:latest'
@@ -80,21 +77,20 @@ process MegaHit {
 	
 process QUAST {
 
-	    container 'staphb/quast:latest'
-	    publishDir "${params.output_dir}/quast_output", mode: 'copy'
+    container 'staphb/quast:latest'
+    publishDir "${params.output_dir}/quast_output", mode: 'copy'
 
-	    input:
-	    path contigs
+    input:
+    path contigs
 
-	    output:
-	    path("./quast_output"), emit: quast_report
+    output:
+    path("./quast_output"), emit: quast_report
 
-	    script:
-	    """
-	    mkdir -p quast_output
-	    metaquast.py ${contigs} -o ./quast_output
-	    
-	    """
+    script:
+    """
+    mkdir -p quast_output
+    metaquast.py ${contigs} -o ./quast_output
+    """
 }	
 
 process Kraken2 {
@@ -137,7 +133,6 @@ process Metaphlan_reads {
     metaphlan ${forward_paired},${reverse_paired} --input_type fastq --bowtie2out metaphlan_output/metaphlan_bowtie2.txt --nproc 10 > metaphlan_output/metaphlan_profile_reads.txt
     """
 }
-	
 	
 	
 process metawrapBinning {
@@ -255,7 +250,6 @@ process PrependBinNames {
     """
 }
 
-
 process Vsearch  {
 
 	container 'manutamminen/vsearch:v1.28'
@@ -274,10 +268,8 @@ process Vsearch  {
         """}
 
 
-
 process AMRfinder {
-
-	container 'bladerunner2945/amr_kma_heatmap:latest'
+	container 'pnatarajan84/amr_kma_fpkm_heatmap:latest'
 	publishDir "${params.output_dir}/amrfinder_output", mode: 'copy'
 
 	input:
@@ -286,19 +278,28 @@ process AMRfinder {
 	path reverse_paired
 
 	output:
-	path "amrfinder_output/amr_finder_report.txt", emit: amr_finder_report
+	path "amrfinder_output/*", emit: amr_finder_output_files
 
 	script:
 	"""
 	mkdir -p amrfinder_output
 	amrfinder -n ${merged_bins_fa} -o amrfinder_output/amr_finder_report.txt
-	kma index -i /data/AMR_CDS.fasta -o amr_kma_index 
-	kma -ipe ${forward_paired}  ${reverse_paired} -o amr_kma_OUTPUT -t_db amr_kma_index -ef 
-	python3 /scripts/kma_to_amr_abundance.py amr_kma_OUTPUT.mapstat amr_kma_OUTPUT.res amrfinder_output/amr_abundance.csv
-	python3 /scripts/amr_heatmap.py amrfinder_output/amr_abundance.csv  amrfinder_output/amr_abundance_heatmap_top_genes.jpg
+	kma index -i /data/AMR_CDS.fasta -o amr_kma_index
+
+	# Execute kma and capture its exit status
+	kma -ipe ${forward_paired} ${reverse_paired} -o amr_kma_OUTPUT -t_db amr_kma_index -ef || {
+	    exit_status=\$?
+	    if [[ \$exit_status -ne 95 ]]; then
+		echo "kma failed with exit status \$exit_status"
+		exit \$exit_status
+	    fi
+	    echo "Ignoring kma exit status 95, continuing..."
+	}
+
+	kma_to_amr_abundance.py amr_kma_OUTPUT.mapstat amr_kma_OUTPUT.res amrfinder_output/amr_abundance.csv
+	amr_heatmap.py amrfinder_output/amr_abundance.csv amrfinder_output/amr_abundance_heatmap_top_genes.jpg
 	"""
 	}
-	
 process Deep_Arg {
 
 	container 'bladerunner2945/deep_arg:latest'
@@ -340,7 +341,7 @@ process PlasmidFinder {
 	plasmidfinder.py -i ${merged_bins_fa} -o plasmidfinder_output -x -q
 	"""
 	}
-	
+
 process VirSorter2 {
 
 	container 'staphb/virsorter2:latest'
@@ -374,8 +375,8 @@ workflow  {
     checkm_output = CheckM(dastool_output_bins)
     metaphlan_profile_reads = Metaphlan_reads(trimmed_reads.forward_paired, trimmed_reads.reverse_paired)
     merged_bins = PrependBinNames(dastool_output_bins)
-    ##vsearch_output = Vsearch(merged_bins, params.utax_reference_db)
-    amrfinder_output = AMRfinder(merged_bins)
+    vsearch_output = Vsearch(merged_bins, params.utax_reference_db)
+    amrfinder_output = AMRfinder(merged_bins,trimmed_reads.forward_paired, trimmed_reads.reverse_paired)
     deeparg_results = Deep_Arg(merged_bins)
     plasmidfinder_output = PlasmidFinder(merged_bins)
     virsorter2_output = VirSorter2(merged_bins, params.virsorter2_db)
