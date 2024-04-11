@@ -466,17 +466,10 @@ Detailed evaluation reports are generated for each major release, incorporating 
 
 The integration of simulation tools and advanced performance metrics ensures a thorough assessment of the Meta AMR Tracker Pipeline, guiding ongoing optimizations and improvements.
 
-## Contributing
 
-We encourage contributions to our documentation and workflows. Please see our [Contribution Guidelines](CONTRIBUTING.md) for more information on how to propose changes or report issues.
 
-## License
+<h1 style="color: red; font-weight: bold;">MetaAMR Tracker Pipeline Evaluation Report</h1>
 
-This project is licensed under the [MIT License](LICENSE). See the LICENSE file for more details.
-
----
-
-For more information and updates, please visit our [GitHub repository](https://github.com/YourRepoHere).
 
 
 
