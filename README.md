@@ -496,7 +496,7 @@ The pipeline was executed using Nextflow, which provides robust data handling ca
 The pipeline was executed with the following Nextflow command to enable detailed resource monitoring:
 
 ```bash
-nextflow run ILLUMINA_Meta_Tracker_Pipeline_tested_final.nf --first_fastq /home/pnatarajan/RESEARCH/metagenome/GUI/DRR274968_1.fastq.gz --second_fastq /home/pnatarajan/RESEARCH/metagenome/GUI/DRR274968_2.fastq.gz --output_dir /home/pnatarajan/RESEARCH/metagenome/GUI/illumina_output_metrics -with-report -with-trace -with-timeline -resume
+nextflow run ILLUMINA_Meta_Tracker_Pipeline_tested_final.nf --first_fastq /home/chris/RESEARCH/metagenome/GUI/DRR274968_1.fastq.gz --second_fastq /home/chris/RESEARCH/metagenome/GUI/DRR274968_2.fastq.gz --output_dir /home/chris/RESEARCH/metagenome/GUI/illumina_output_metrics -with-report -with-trace -with-timeline -resume
 
 
 
