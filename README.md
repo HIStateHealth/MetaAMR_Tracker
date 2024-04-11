@@ -468,7 +468,32 @@ The integration of simulation tools and advanced performance metrics ensures a t
 
 
 
-# **MetaAMR Tracker Pipeline Evaluation Report**
+                     
+
+
+
+                                                                                # **MetaAMR Tracker Pipeline Evaluation Report**
+
+                                                                                                    ## **Overview**
+This report outlines the testing and evaluation of the MetaAMR Tracker pipeline, which is designed to handle comprehensive analysis of antimicrobial resistance (AMR) genes from environmental samples. This document serves to demonstrate the pipeline's effectiveness, based on rigorous testing metrics.
+
+                                                                                            ## **Testing Environment**
+The pipeline was executed using Nextflow, which provides robust data handling capabilities to manage complex workflows. The pipeline was tested under various computational loads to simulate real-world scenarios and to ensure its performance across different systems.
+
+## **Metrics Employed**
+- **Accuracy**: Verification against known datasets to ensure the pipeline's outputs are accurate.
+- **Efficiency**: Monitored by runtime and computational resource utilization.
+- **Scalability**: Tested by incrementally increasing the data volume to evaluate performance.
+- **Reliability**: Assessed through the frequency of failures or errors during executions.
+- **Time Scale and Temporal Analysis**: Performance monitored over time to ensure stability and efficiency.
+- **Space Complexity Scale**: Evaluated the storage requirements to optimize space utilization.
+
+## **Testing Commands**
+The pipeline was executed with the following Nextflow command to enable detailed resource monitoring:
+
+```bash
+nextflow run ILLUMINA_Meta_Tracker_Pipeline_tested_final.nf --first_fastq /home/pnatarajan/RESEARCH/metagenome/GUI/DRR274968_1.fastq.gz --second_fastq /home/pnatarajan/RESEARCH/metagenome/GUI/DRR274968_2.fastq.gz --output_dir /home/pnatarajan/RESEARCH/metagenome/GUI/illumina_output_metrics -with-report -with-trace -with-timeline -resume
+
 
 
 
