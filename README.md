@@ -473,7 +473,7 @@ The integration of simulation tools and advanced performance metrics ensures a t
 
 
 
-                               <h1 style="color: red; font-weight: bold;">MetaAMR Tracker Pipeline Evaluation Report</h1>
+            <h1 style="color: red; font-weight: bold;">MetaAMR Tracker Pipeline Evaluation Report</h1>
 
 
 
