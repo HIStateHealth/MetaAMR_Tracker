@@ -472,12 +472,12 @@ The integration of simulation tools and advanced performance metrics ensures a t
 
 
 
-                                                                                # **MetaAMR Tracker Pipeline Evaluation Report**
+                                # **MetaAMR Tracker Pipeline Evaluation Report**
 
-                                                                                                    ## **Overview**
+                                                    ## **Overview**
 This report outlines the testing and evaluation of the MetaAMR Tracker pipeline, which is designed to handle comprehensive analysis of antimicrobial resistance (AMR) genes from environmental samples. This document serves to demonstrate the pipeline's effectiveness, based on rigorous testing metrics.
 
-                                                                                            ## **Testing Environment**
+                                                ## **Testing Environment**
 The pipeline was executed using Nextflow, which provides robust data handling capabilities to manage complex workflows. The pipeline was tested under various computational loads to simulate real-world scenarios and to ensure its performance across different systems.
 
 ## **Metrics Employed**
