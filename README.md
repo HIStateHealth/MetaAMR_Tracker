@@ -7,6 +7,7 @@ Users must specify the type of reads (Illumina, Nanopore, or Hybrid) they wish t
 From quality control to contig assembly and resistance gene identification, MetaAMR-Tracker integrates state-of-the-art tools like FastQC, MEGAHIT, MetaPhlAn, and ResFinder. The pipeline delivers a holistic view of the microbial resistome, providing valuable insights into the prevalence and distribution of AMR genes in environmental samples.
 
 
+
 ![image](https://github.com/HIStateHealth/MetaAMR_Tracker/assets/138935158/0f595650-5f7e-403d-b6b3-a4c25f85e44d)
 
 
@@ -472,7 +473,9 @@ The integration of simulation tools and advanced performance metrics ensures a t
 
 
 
-                                # **MetaAMR Tracker Pipeline Evaluation Report**
+                               <h1 style="color: red; font-weight: bold;">MetaAMR Tracker Pipeline Evaluation Report</h1>
+
+
 
                                                     ## **Overview**
 This report outlines the testing and evaluation of the MetaAMR Tracker pipeline, which is designed to handle comprehensive analysis of antimicrobial resistance (AMR) genes from environmental samples. This document serves to demonstrate the pipeline's effectiveness, based on rigorous testing metrics.
