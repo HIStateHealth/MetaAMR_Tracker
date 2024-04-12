@@ -499,6 +499,22 @@ The pipeline was executed with the following Nextflow command to enable detailed
 nextflow run ILLUMINA_Meta_Tracker_Pipeline_tested_final.nf --first_fastq /home/chris/RESEARCH/metagenome/GUI/DRR274968_1.fastq.gz --second_fastq /home/chris/RESEARCH/metagenome/GUI/DRR274968_2.fastq.gz --output_dir /home/chris/RESEARCH/metagenome/GUI/illumina_output_metrics -with-report -with-trace -with-timeline -resume
 
 
+| Task ID | Process            | Status     | CPU Usage | Peak RAM  | Duration  |
+|---------|--------------------|------------|-----------|-----------|-----------|
+| 1       | fastQC             | CACHED     | 102.9%    | 562.2 MB  | 5m 10s    |
+| 2       | Trimmomatic        | CACHED     | 100.7%    | 1.3 GB    | 21m 23s   |
+| 3       | Kraken2            | CACHED     | 107.5%    | 8.2 GB    | 9m 52s    |
+| 4       | Metaphlan_reads    | CACHED     | 952.5%    | 18.5 GB   | 28m 37s   |
+| 5       | MegaHit            | CACHED     | 4538.5%   | 12.3 GB   | 1h 28m 10s|
+| 6       | metawrapBinning    | COMPLETED  | 854.9%    | 9.9 GB    | 1h 3m 46s |
+| 7       | QUAST              | COMPLETED  | 127.1%    | 650.6 MB  | 46.9s     |
+| 8       | DAStool            | COMPLETED  | 1049.7%   | 2.4 GB    | 4m 6s     |
+| 9       | CheckM             | COMPLETED  | 116.5%    | 70.2 GB   | 1h 9m 48s |
+| 10      | PrependBinNames    | COMPLETED  | 99.5%     | 1.2 GB    | 4.6s      |
+| 11      | GTDBTK             | COMPLETED  | 142.2%    | 729.1 GB  | 47m 57s   |
+| 12      | PlasmidFinder      | COMPLETED  | 100.0%    | 4.4 GB    | 1h 36m 59s|
+| 13      | VirSorter2         | COMPLETED  | 1468.4%   | 2.2 GB    | 19h 33m 24s|
+| 14      | AMRfinder          | COMPLETED  | 238.8%    | 1.2 GB    | 7m 47s    |
 
 
 
