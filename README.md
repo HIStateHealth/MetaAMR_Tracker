@@ -45,7 +45,6 @@ Before you begin, ensure that you have installed the following:
 - [Docker](https://www.docker.com/products/docker-desktop)
 - Python 3.0 or higher
 - git
-- 
 - All bioinformatics tools l![Uploading pipeline_drawing_Hybrid.drawio (2).png…]()
 isted in the Nextflow script
 
