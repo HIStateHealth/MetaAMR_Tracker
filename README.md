@@ -111,8 +111,22 @@ This approach ensures that each contig can be easily traced back to its original
 ## VSEARCH
 VSEARCH is used for sequence searching and clustering, often employed in creating non-redundant sequence databases. It helps identify unique resistance genes and their variants, aiding in the detection of emerging resistance mechanisms.
 
-## AMR Finder Plus
-AMR Finder Plus identifies antimicrobial resistance genes by comparing sequences against a curated database. This tool is instrumental in pinpointing specific resistance genes, their variants, and associated mechanisms, providing insights into the resistance profiles of microbial communities.
+## AMR Finder Plus and Enhanced Python Script Integration
+
+### AMR Finder Plus
+This essential tool scans our samples, matching sequences against a rigorously maintained database to spot antimicrobial resistance genes. It's a whiz at detecting not just the genes themselves but also their variants and the mechanisms behind their resistance superpowers. Think of AMR Finder Plus as our detective, uncovering the hidden secrets of microbial resistance within our communities.
+
+### Python Script Enhancements
+We've boosted our AMR process by coupling it with a suite of customized Python scripts. These scripts have been fine-tuned to work seamlessly with AMR Finder Plus, automating and refining the steps from gene extraction to visualization.
+
+- **Sequence Extraction**: Our `extract_amr_contigs.py` script meticulously carves out the AMR gene sequences from larger genetic canvases, setting the stage for precise analysis.
+- **KMA Alignment**: With the power of the KMA tool, we align raw sequence data to our focused library of AMR genes, ensuring that every potential match is explored and noted.
+- **Abundance Calculation**: The `kma_to_amr_abundance_for_amrfindergenes.py` script takes the baton and calculates how much of each resistance gene is present, giving us quantitative insight into their prevalence.
+- **Data Integration**: We then bring everything together, merging our findings into the AMR Finder Plus reports using `update_amr_finder_report_with_abundance.py`, creating a detailed map of resistance across our samples.
+- **Visualization with Heatmaps**: Finally, `heatmap_from_amr_finder_report_abundance.py` transforms our data into vivid heatmaps, making complex patterns of resistance easily digestible at a glance.
+
+In short, we've not only implemented AMR Finder Plus but also customized additional steps that extract, align, quantify, and visualize AMR genes. This fortified process should give the user with a more comprehensive understanding of antimicrobial resistance.
+
 
 ## Virsorter2
 Virsorter2 detects viral sequences within metagenomic data, including prophages within microbial genomes. Understanding these elements is crucial for grasping horizontal gene transfer mechanisms, which can contribute to the spread of antimicrobial resistance.
