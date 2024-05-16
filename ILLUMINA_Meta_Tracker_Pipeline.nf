@@ -225,6 +225,7 @@ process GTDBTK {
 
 	output:
 	path "gtdbtk_output/*", emit: gtdbtk_output_files
+	path "gtdbtk_output/gtdbtk.bac120.summary.tsv", emit: gtdbtk_report
 
 	script:
 	"""
@@ -352,6 +353,7 @@ process PlasmidFinder {
 
 	output:
 	path "plasmidfinder_output/*", emit: plasmidfinder_output_files
+        path "plasmidfinder_output/results_tab.tsv", emit: plasmid_finder_report
 
 
 	script:
@@ -372,6 +374,7 @@ process VirSorter2 {
 
 	output:
 	path "virsorter2_output", emit: virsorter2_output_files
+	path "virsorter2_output/final-viral-score.tsv", emit: virsorter2_report
 
 
 	script:
@@ -380,7 +383,51 @@ process VirSorter2 {
 	virsorter run -i ${merged_bins_fa} -w virsorter2_output --provirus-off --max-orf-per-seq 10 all -j 12 --db-dir ${virsorter2_db} --min-score 0.9
 	"""
 	}
+	
+process summary_report {
 
+	container 'pnatarajan84/amr_gtdbtk_summary:v1.0'
+	publishDir "${params.output_dir}/summary_output", mode: 'copy'
+
+	input:
+
+	path amr_finder_report_with_abundance
+	path gtdbtk_report
+	path plasmid_finder_report
+	path virsorter2_report
+	path merged_bins_fa
+	path forward_paired
+	path reverse_paired
+
+	output:
+	
+	path "summary_output/amr_summary_with_locations.xlsx", emit: amr_summary
+	path "summary_output/GTDBTK_summary_with_abundance.xlsx", emit: gtdbtk_summary
+
+
+	script:
+	"""
+	mkdir -p summary_output
+	amr_summary.py --amr_finder ${amr_finder_report_with_abundance} --gtdbtk ${gtdbtk_report} --plasmid ${plasmid_finder_report} --viral ${virsorter2_report} --output amr_summary_with_locations.xlsx
+
+	awk '/^>/{if (substr($1,2,8) == "unbinned") skip=1; else {print $1; skip=0}} !skip {if (!/^>/) print}' ${merged_bins_fa} > merged_bins_binned.fa
+
+	kma index -i merged_bins_binned.fa -o merged_bins_binned_index
+	kma -ipe ${forward_paired} ${reverse_paired} -o merged_bins_binned_kma_output -t_db merged_bins_binned_index -ef || {
+	exit_status=\$?
+	if [[ \$exit_status -ne 95 ]]; then
+	echo "kma failed with exit status \$exit_status"
+	exit \$exit_status
+	fi
+	echo "Ignoring kma exit status 95, continuing..."
+
+	}
+
+	calculate_abundance_bins_genus.py merged_bins_binned_kma_output.res ${gtdbtk_report} GTDBTK_summary_with_abundance.xlsx
+	"""
+	}
+
+	
 
 workflow  {
 
@@ -400,6 +447,7 @@ workflow  {
     plasmidfinder_output = PlasmidFinder(merged_bins)
     virsorter2_output = VirSorter2(merged_bins, params.virsorter2_db)
     gtdbtk_output = GTDBTK(dastool_output_bins, params.gtdbtk_db)
+    summary_output = summary_report(amrfinder_output.amr_finder_report_with_abundance,gtdbtk_output.gtdbtk_report, plasmidfinder_output.plasmid_finder_report, virsorter2_output.virsorter2_report, merged_bins, trimmed_reads.forward_paired, trimmed_reads.reverse_paired)
     
      }
 
