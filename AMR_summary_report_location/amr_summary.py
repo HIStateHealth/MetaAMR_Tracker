@@ -10,10 +10,7 @@ def partial_match(query, target_list):
 
 def find_classification_for_bin(bin_query, gtdbtk_data):
     """Find classification based on bin query in GTDBtk data."""
-    for bin_id in gtdbtk_data:
-        if bin_query in bin_id:
-            return gtdbtk_data[bin_id]
-    return "Unknown"
+    return gtdbtk_data.get(bin_query, "Unknown")
 
 def update_amr_gene_location(row, primary_viral_contigs, primary_plasmid_contigs):
     """Determine AMR gene location based on viral and plasmid data."""
@@ -33,17 +30,19 @@ def main(args):
     plasmid_df = pd.read_csv(args.plasmid, delimiter='\t')
     viral_df = pd.read_csv(args.viral, delimiter='\t')
 
-    # Clean and extract primary contig parts
+    # Clean and extract primary contig parts for plasmid and viral data
     plasmid_df['primary_contig'] = plasmid_df['Contig'].apply(lambda x: x.split(' ')[0])
-    viral_df['primary_viral_contig'] = viral_df['seqname'].apply(lambda x: x.split('||')[0])
-
-    # Create maps from cleaned data
     primary_plasmid_contigs = plasmid_df['primary_contig'].unique()
+    viral_df['primary_viral_contig'] = viral_df['seqname'].apply(lambda x: x.split('||')[0])
     primary_viral_contigs = viral_df['primary_viral_contig'].unique()
+
+    # Extract bin numbers correctly by splitting at '_k'
+    amr_finder_df['Bin Number'] = amr_finder_df['Contig id'].apply(lambda x: x.split('_k')[0])
+
+    # Create a map from the GTDBtk data using 'user_genome' as keys for classifications
     gtdbtk_map = gtdbtk_df.set_index('user_genome')['classification'].to_dict()
 
     # Apply mapping functions
-    amr_finder_df['Bin Number'] = amr_finder_df['Contig id'].apply(lambda x: '_'.join(x.split('_')[:3]))
     amr_finder_df['Location_identity'] = amr_finder_df['Bin Number'].apply(lambda x: find_classification_for_bin(x, gtdbtk_map))
     amr_finder_df['AMR_gene_location (bac_chromosome, plasmid, phage)'] = amr_finder_df.apply(
         lambda row: update_amr_gene_location(row, primary_viral_contigs, primary_plasmid_contigs), axis=1
@@ -63,10 +62,6 @@ if __name__ == "__main__":
     parser.add_argument('--plasmid', type=str, required=True, help='Path to the plasmid report file')
     parser.add_argument('--viral', type=str, required=True, help='Path to the viral report file')
     parser.add_argument('--output', type=str, required=True, help='Output path for the Excel file')
-    
+
     args = parser.parse_args()
     main(args)
-
-    main(args)
-#python process_amr_data.py --amr_finder path_to_amr_finder_report_with_abundance.txt --gtdbtk path_to_gtdbtk_report.tsv --plasmid path_to_plasmid_report.tsv --viral path_to_viral_report.tsv --output path_to_output.xlsx
-
