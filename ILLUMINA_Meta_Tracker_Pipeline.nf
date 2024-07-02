@@ -10,6 +10,7 @@ params.kraken2_db = ''
 params.utax_reference_db = ''
 params.virsorter2_db = ''
 params.gtdbtk_db = ''
+params.kaiju_fungi_db = ''
 
 
 process fastQC {
@@ -251,21 +252,26 @@ process PrependBinNames {
     """
 }
 
-process Vsearch  {
 
-	container 'manutamminen/vsearch:v1.28'
-        publishDir "${params.output_dir}/vsearch_output", mode: 'copy'
+process Kaiju  {
+
+	container 'bladerunner2945/kaiju:latest'
+        publishDir "${params.output_dir}/kaiju_output", mode: 'copy'
 	
 	input:
 	path merged_bins_fa
-	path utax_reference_db
+	path kaiju_fungi_db
 	
 	output:
-	path "output_fungi_taxa_bins.txt", emit: vsearch_fungi_output
+	path "kaiju_output/kaiju_unbinned_fungi_with_names_sorted.out", emit: kaiju_fungi_output
 	
 	script:
 	"""
-	vsearch --usearch_global ${merged_bins_fa} --db ${utax_reference_db} --id 0.97 --blast6out output_fungi_taxa_bins.txt --top_hits_only
+	mkdir -p kaiju_output
+	python /usr/local/scripts/split_fasta.py ${merged_bins_fa} unbinned unbinned_bins.fa
+	kaiju -t ${kaiju_fungi_db}/nodes.dmp -f ${kaiju_fungi_db}/kaiju_db_fungi.fmi -i unbinned_bins.fa  -E 1e-5 -m 20 -s 85 -z 10 -o kaiju_unbinned_fungi.out
+	kaiju-addTaxonNames -t ${kaiju_fungi_db}/nodes.dmp -n ${kaiju_fungi_db}/names.dmp -i kaiju_unbinned_fungi.out -o kaiju_unbinned_fungi_with_names.out
+	sort -k 4,4 -r kaiju_unbinned_fungi_with_names.out -o kaiju_output/kaiju_unbinned_fungi_with_names_sorted.out
         """}
 
 
@@ -390,7 +396,6 @@ process summary_report {
 	publishDir "${params.output_dir}/summary_output", mode: 'copy'
 
 	input:
-
 	path amr_finder_report_with_abundance
 	path gtdbtk_report
 	path plasmid_finder_report
@@ -404,13 +409,12 @@ process summary_report {
 	path "summary_output/amr_summary_with_locations.xlsx", emit: amr_summary
 	path "summary_output/GTDBTK_summary_with_abundance.xlsx", emit: gtdbtk_summary
 
-
 	script:
 	"""
 	mkdir -p summary_output
-	amr_summary.py --amr_finder ${amr_finder_report_with_abundance} --gtdbtk ${gtdbtk_report} --plasmid ${plasmid_finder_report} --viral ${virsorter2_report} --output amr_summary_with_locations.xlsx
-
-	awk '/^>/{if (substr($1,2,8) == "unbinned") skip=1; else {print $1; skip=0}} !skip {if (!/^>/) print}' ${merged_bins_fa} > merged_bins_binned.fa
+	amr_summary.py --amr_finder ${amr_finder_report_with_abundance} --gtdbtk ${gtdbtk_report} --plasmid ${plasmid_finder_report} --viral ${virsorter2_report} --output summary_output/amr_summary_with_locations.xlsx
+	
+	sed '/^>.*unbinned/d; /^>/s/ .*//' ${merged_bins_fa} > merged_bins_binned.fa
 
 	kma index -i merged_bins_binned.fa -o merged_bins_binned_index
 	kma -ipe ${forward_paired} ${reverse_paired} -o merged_bins_binned_kma_output -t_db merged_bins_binned_index -ef || {
@@ -423,12 +427,11 @@ process summary_report {
 
 	}
 
-	calculate_abundance_bins_genus.py merged_bins_binned_kma_output.res ${gtdbtk_report} GTDBTK_summary_with_abundance.xlsx
+	calculate_abundance_bins_genus.py merged_bins_binned_kma_output.res ${gtdbtk_report} summary_output/GTDBTK_summary_with_abundance.xlsx
 	"""
 	}
 
 	
-
 workflow  {
 
     fastQC(params.first_fastq, params.second_fastq)
@@ -441,7 +444,7 @@ workflow  {
     checkm_output = CheckM(dastool_output_bins)
     metaphlan_profile_reads = Metaphlan_reads(trimmed_reads.forward_paired, trimmed_reads.reverse_paired)
     merged_bins = PrependBinNames(dastool_output_bins)
-    //vsearch_output = Vsearch(merged_bins, params.utax_reference_db)
+    kaiju_output = Kaiju(merged_bins, params.kaiju_fungi_db)
     amrfinder_output = AMRfinder(merged_bins,trimmed_reads.forward_paired, trimmed_reads.reverse_paired)
     deeparg_results = Deep_Arg(merged_bins)
     plasmidfinder_output = PlasmidFinder(merged_bins)
