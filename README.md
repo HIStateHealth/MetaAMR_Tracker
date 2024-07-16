@@ -109,8 +109,30 @@ The output of the Prepend Program is a set of modified FASTA files, one for each
 This approach ensures that each contig can be easily traced back to its original bin, enhancing the interpretability of results from downstream analytical processes.
 
 
-## VSEARCH
-VSEARCH is used for sequence searching and clustering, often employed in creating non-redundant sequence databases. It helps identify unique resistance genes and their variants, aiding in the detection of emerging resistance mechanisms.
+# Kaiju
+
+Kaiju is a bioinformatics program designed for the taxonomic classification of metagenomic sequences. It uses a protein-level alignment approach, making it particularly effective for identifying and classifying microbial species in environmental samples, including those with incomplete or fragmented genomes.
+
+## How It Works
+- **Protein-Level Alignment**: Kaiju translates DNA sequences into protein sequences and compares them against a reference database of known protein sequences. This approach improves accuracy in identifying microbial species, especially for sequences that are not well-represented in nucleotide databases.
+- **Reference Database**: Kaiju uses a reference database that includes protein sequences from various microbial species. This database can be customized to include specific groups of interest, such as pathogens or antibiotic resistance genes.
+- **Classification**: Kaiju assigns taxonomic labels to sequences based on the best matches found in the reference database. It can identify bacteria, archaea, fungi, viruses, and other microorganisms.
+
+
+
+## Applications in AMR Detection
+- **Microbial Identification**: Kaiju helps identify the presence of specific microbial species in metagenomic samples. This is crucial for understanding the microbial community structure and detecting potential pathogens.
+- **Resistance Gene Classification**: By identifying the species carrying antibiotic resistance genes, Kaiju provides insights into the spread and origin of these genes within microbial communities.
+- **Environmental Monitoring**: Kaiju is used in monitoring environmental samples such as wastewater, soil, and water to detect and track the presence of antimicrobial resistance genes and their host organisms.
+
+## Example Usage
+```bash
+# Run Kaiju for taxonomic classification
+kaiju -t nodes.dmp -f kaiju_db.fmi -i input.fastq -o output.kaiju
+
+# Generate a summary report
+kaijuReport -t nodes.dmp -n names.dmp -i output.kaiju -o report.out
+
 
 ## AMR Finder Plus and Enhanced Python Script Integration
 
