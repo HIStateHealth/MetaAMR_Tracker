@@ -144,6 +144,7 @@ NANOPORE SIDE****
 
 ## Overview
 This guide provides instructions on setting up and running a Nextflow pipeline for metagenomic analysis. The pipeline uses Docker containers for each process, ensuring consistency and reproducibility.
+All Docker images included in the Nextflow code are available and can be searched on "Docker Hub" located here: **https://hub.docker.com/**  
 
 ## Pipeline Setup
 
