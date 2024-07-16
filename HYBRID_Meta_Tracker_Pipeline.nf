@@ -11,7 +11,7 @@ params.kraken2_db = ''
 params.gtdbtk_db = ''
 params.utax_reference_db = ''
 params.virsorter2_db = ''
-
+params.kaiju_fungi_db = ''
 
 process fastQC_hybrid {
 
@@ -352,23 +352,27 @@ process PrependBinNames_hybrid {
 	    """
 	}
 
-process Vsearch_hybrid  {
+process Kaiju_hybrid  {
 
-	container 'manutamminen/vsearch:v1.28'
-        publishDir "${params.output_dir}/vsearch_fungi_output", mode: 'copy'
+	container 'bladerunner2945/kaiju:latest'
+        publishDir "${params.output_dir}/kaiju_output", mode: 'copy'
 	
 	input:
 	path merged_bins_fa
-	path utax_reference_db
+	path kaiju_fungi_db
 	
 	output:
-	path "vsearch_fungi_output/output_hybrid_fungi_taxa_bins.txt", emit: vsearch_hybrid_fungi_output
+	path "kaiju_output/kaiju_unbinned_fungi_with_names_sorted.out", emit: kaiju_fungi_output
 	
 	script:
 	"""
-	mkdir -p vsearch_fungi_output
-	vsearch --usearch_global ${merged_bins_fa} --db ${utax_reference_db} --id 0.97 --blast6out vsearch_fungi_output/output_hybrid_fungi_taxa_bins.txt --top_hits_only
+	mkdir -p kaiju_output
+	python /usr/local/scripts/split_fasta.py ${merged_bins_fa} unbinned unbinned_bins.fa
+	kaiju -t ${kaiju_fungi_db}/nodes.dmp -f ${kaiju_fungi_db}/kaiju_db_fungi.fmi -i unbinned_bins.fa  -E 1e-5 -m 20 -s 85 -z 10 -o kaiju_unbinned_fungi.out
+	kaiju-addTaxonNames -t ${kaiju_fungi_db}/nodes.dmp -n ${kaiju_fungi_db}/names.dmp -i kaiju_unbinned_fungi.out -o kaiju_unbinned_fungi_with_names.out
+	sort -k 4,4 -r kaiju_unbinned_fungi_with_names.out -o kaiju_output/kaiju_unbinned_fungi_with_names_sorted.out
         """}
+        
         
 process AMRfinder_hybrid {
 
@@ -446,7 +450,49 @@ process VirSorter2_hybrid {
 	mkdir -p virsorter2_hybrid_output
 	virsorter run -i ${merged_bins_fa} -w virsorter2_hybrid_output --provirus-off --max-orf-per-seq 10 all -j 12 --db-dir ${virsorter2_db} --min-score 0.9
 	"""
-	}      
+	}   
+	
+	
+process summary_report {
+
+	container 'pnatarajan84/amr_gtdbtk_summary:v1.0'
+	publishDir "${params.output_dir}/summary_output", mode: 'copy'
+
+	input:
+	path amr_finder_report_with_abundance
+	path gtdbtk_report
+	path plasmid_finder_report
+	path virsorter2_report
+	path merged_bins_fa
+	path forward_paired
+	path reverse_paired
+
+	output:
+	
+	path "summary_output/amr_summary_with_locations.xlsx", emit: amr_summary
+	path "summary_output/GTDBTK_summary_with_abundance.xlsx", emit: gtdbtk_summary
+
+	script:
+	"""
+	mkdir -p summary_output
+	amr_summary.py --amr_finder ${amr_finder_report_with_abundance} --gtdbtk ${gtdbtk_report} --plasmid ${plasmid_finder_report} --viral ${virsorter2_report} --output summary_output/amr_summary_with_locations.xlsx
+	
+	sed '/^>.*unbinned/d; /^>/s/ .*//' ${merged_bins_fa} > merged_bins_binned.fa
+
+	kma index -i merged_bins_binned.fa -o merged_bins_binned_index
+	kma -ipe ${forward_paired} ${reverse_paired} -o merged_bins_binned_kma_output -t_db merged_bins_binned_index -ef || {
+	exit_status=\$?
+	if [[ \$exit_status -ne 95 ]]; then
+	echo "kma failed with exit status \$exit_status"
+	exit \$exit_status
+	fi
+	echo "Ignoring kma exit status 95, continuing..."
+
+	}
+
+	calculate_abundance_bins_genus.py merged_bins_binned_kma_output.res ${gtdbtk_report} summary_output/GTDBTK_summary_with_abundance.xlsx
+	"""
+	}   
         
 
 workflow  {
@@ -467,10 +513,11 @@ workflow  {
     checkm_results = CheckM_hybrid(dastool_results.dastool_output_bins)
     gtdbtk_results = GTDBTK_hybrid(dastool_results.dastool_output_bins, params.gtdbtk_db)
     prepend_results = PrependBinNames_hybrid(dastool_results.dastool_output_bins)
-    vsearch_results = Vsearch_hybrid(prepend_results.merged_bins_fa,params.utax_reference_db)
+    kaiju_output = Kaiju_hybrid(merged_bins, params.kaiju_fungi_db)
     amrfinder_results = AMRfinder_hybrid(prepend_results.merged_bins_fa)
     deeparg_results = Deep_Arg_hybrid(prepend_results.merged_bins_fa)
     plasmidFinder_results = PlasmidFinder_hybrid(prepend_results.merged_bins_fa)
     virsorter2_results = VirSorter2_hybrid(prepend_results.merged_bins_fa,params.virsorter2_db)
+    summary_output = summary_report(amrfinder_output.amr_finder_report_with_abundance,gtdbtk_output.gtdbtk_report, plasmidfinder_output.plasmid_finder_report, virsorter2_output.virsorter2_report,
     
     }
