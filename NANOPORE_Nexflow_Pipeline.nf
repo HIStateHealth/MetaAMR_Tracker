@@ -8,6 +8,7 @@ params.kraken2_db = ''
 params.gtdbtk_db = ''
 params.utax_reference_db = ''
 params.virsorter2_db = ''
+params.kaiju_fungi_db = ''
 
 process nanoplot {
 
@@ -280,22 +281,25 @@ process PrependBinNames_nanopore {
 	}
 
 
-process Vsearch_nanopore  {
+process Kaiju_nanopore  {
 
-	container 'manutamminen/vsearch:v1.28'
-        publishDir "${params.output_dir}/vsearch_fungi_output", mode: 'copy'
+	container 'bladerunner2945/kaiju:latest'
+        publishDir "${params.output_dir}/kaiju_output", mode: 'copy'
 	
 	input:
 	path merged_bins_fa
-	path utax_reference_db
+	path kaiju_fungi_db
 	
 	output:
-	path "vsearch_fungi_output/output_fungi_taxa_bins.txt", emit: vsearch_fungi_output
+	path "kaiju_output/kaiju_unbinned_fungi_with_names_sorted.out", emit: kaiju_fungi_output
 	
 	script:
 	"""
-	mkdir -p vsearch_fungi_output
-	vsearch --usearch_global ${merged_bins_fa} --db ${utax_reference_db} --id 0.97 --blast6out vsearch_fungi_output/output_fungi_taxa_bins.txt --top_hits_only
+	mkdir -p kaiju_output
+	python /usr/local/scripts/split_fasta.py ${merged_bins_fa} unbinned unbinned_bins.fa
+	kaiju -t ${kaiju_fungi_db}/nodes.dmp -f ${kaiju_fungi_db}/kaiju_db_fungi.fmi -i unbinned_bins.fa  -E 1e-5 -m 20 -s 85 -z 10 -o kaiju_unbinned_fungi.out
+	kaiju-addTaxonNames -t ${kaiju_fungi_db}/nodes.dmp -n ${kaiju_fungi_db}/names.dmp -i kaiju_unbinned_fungi.out -o kaiju_unbinned_fungi_with_names.out
+	sort -k 4,4 -r kaiju_unbinned_fungi_with_names.out -o kaiju_output/kaiju_unbinned_fungi_with_names_sorted.out
         """}
         
         
@@ -379,6 +383,49 @@ process VirSorter2_nanopore {
 	}
 	
 	
+process summary_report {
+
+	container 'pnatarajan84/amr_gtdbtk_summary:v1.0'
+	publishDir "${params.output_dir}/summary_output", mode: 'copy'
+
+	input:
+	path amr_finder_report_with_abundance
+	path gtdbtk_report
+	path plasmid_finder_report
+	path virsorter2_report
+	path merged_bins_fa
+	path forward_paired
+	path reverse_paired
+
+	output:
+	
+	path "summary_output/amr_summary_with_locations.xlsx", emit: amr_summary
+	path "summary_output/GTDBTK_summary_with_abundance.xlsx", emit: gtdbtk_summary
+
+	script:
+	"""
+	mkdir -p summary_output
+	amr_summary.py --amr_finder ${amr_finder_report_with_abundance} --gtdbtk ${gtdbtk_report} --plasmid ${plasmid_finder_report} --viral ${virsorter2_report} --output summary_output/amr_summary_with_locations.xlsx
+	
+	sed '/^>.*unbinned/d; /^>/s/ .*//' ${merged_bins_fa} > merged_bins_binned.fa
+
+	kma index -i merged_bins_binned.fa -o merged_bins_binned_index
+	kma -ipe ${forward_paired} ${reverse_paired} -o merged_bins_binned_kma_output -t_db merged_bins_binned_index -ef || {
+	exit_status=\$?
+	if [[ \$exit_status -ne 95 ]]; then
+	echo "kma failed with exit status \$exit_status"
+	exit \$exit_status
+	fi
+	echo "Ignoring kma exit status 95, continuing..."
+
+	}
+
+	calculate_abundance_bins_genus.py merged_bins_binned_kma_output.res ${gtdbtk_report} summary_output/GTDBTK_summary_with_abundance.xlsx
+	"""
+	}
+
+	
+	
 
 workflow  {
 
@@ -388,17 +435,17 @@ workflow  {
     medaka_results = medaka(flye_results.flye_contigs, params.nanopore_fastq)
     quast_results = QUAST(medaka_results.medaka_contigs)
     kraken2_results = Kraken2(medaka_results.medaka_contigs, params.kraken2_db)
-    //metaphlan4_results = Metaphlan_nanopore(medaka_results.medaka_contigs) 
     semibin2_results = Semibin2_nanopore(medaka_results.medaka_contigs, params.nanopore_fastq)
     binning_results = metawrapBinning_nanopore(medaka_results.medaka_contigs, params.nanopore_fastq)
     dastool_results = DAStool_nanopore(binning_results.concoct_bins_tsv, binning_results.maxbin2_bins_tsv, semibin2_results.semibin2_bins_tsv, medaka_results.medaka_contigs)
     checkM_results = CheckM_nanopore(dastool_results.dastool_output_bins)
     gtdbtk_results = GTDBTK_nanopore(dastool_results.dastool_output_bins, params.gtdbtk_db)
     prepend_results = PrependBinNames_nanopore(dastool_results.dastool_output_bins)
-    vsearch_results = Vsearch_nanopore(prepend_results.merged_bins_fa,params.utax_reference_db)
+    kaiju_output = Kaiju_nanopore(merged_bins, params.kaiju_fungi_db)
     AMRfinder_results = AMRfinder_nanopore(prepend_results.merged_bins_fa)
     deeparg_results = Deep_Arg_nanopore(prepend_results.merged_bins_fa)
     plasmidFinder_results = PlasmidFinder_nanopore(prepend_results.merged_bins_fa)
     virsorter2_results = VirSorter2_nanopore(prepend_results.merged_bins_fa,params.virsorter2_db)
+    summary_output = summary_report(amrfinder_output.amr_finder_report_with_abundance,gtdbtk_output.gtdbtk_report, plasmidfinder_output.plasmid_finder_report, virsorter2_output.virsorter2_report,
     
     }
