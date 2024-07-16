@@ -171,7 +171,7 @@ All Docker images included in the Nextflow code are available and can be searche
 ## Pipeline Setup
 
 ### 1. Nextflow Configuration
-Create a `nextflow.config` file in your pipeline's root directory with the following content to enable Docker and set the DSL version:
+Create a `nextflow.config` file in your pipeline's root directory  OR download the config file here in the github repository above with the following content to enable Docker and set the DSL version:
 
 
 
