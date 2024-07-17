@@ -194,9 +194,14 @@ params {
 
 **https://github.com/timflutre/trimmomatic/blob/master/adapters/TruSeq3-PE.fa**
 adapters = "${baseDir}/databases/TruSeq3-PE.fa"
+
+**https://genome-idx.s3.amazonaws.com/kraken/k2_pluspfp_08gb_20240605.tar.gz**
 kraken2_db = "${baseDir}/databases/k2_plus_small_db_8gb"
-utax_reference_db = "${baseDir}/databases/utax_reference_dataset_25.07.2023.fasta"
+
+
 virsorter2_db = "${baseDir}/databases/virsorter2_DOCKER/db"
+
+**https://data.gtdb.ecogenomic.org/releases/release214/214.1/auxillary_files/gtdbtk_r214_data.tar.gz**
 gtdbtk_db = "${baseDir}/databases/gtdbtk_r214_data/release214"
 
 
