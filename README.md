@@ -192,6 +192,7 @@ params {
 
 ### DOWNLOAD ALL NECESSSARY DATABASE FILES AND KEEP THEM IN THE DATABASES FOLDER STORED LOCALLY ON YOUR SYSTME SOMEWHERE...
 
+**https://github.com/timflutre/trimmomatic/blob/master/adapters/TruSeq3-PE.fa**
 adapters = "${baseDir}/databases/TruSeq3-PE.fa"
 kraken2_db = "${baseDir}/databases/k2_plus_small_db_8gb"
 utax_reference_db = "${baseDir}/databases/utax_reference_dataset_25.07.2023.fasta"
