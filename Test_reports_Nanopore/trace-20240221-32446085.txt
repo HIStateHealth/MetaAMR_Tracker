@@ -1,16 +1,22 @@
-task_id	hash	native_id	name	status	exit	submit	duration	realtime	%cpu	peak_rss	peak_vmem	rchar	wchar
-1	84/fb151a	2252529	chopper	COMPLETED	0	2024-02-21 09:00:47.663	2m 58s	2m 57s	238.1%	7 MB	20.3 MB	5.8 GB	5.7 GB
-3	8d/8c9ec3	2252539	nanoplot	COMPLETED	0	2024-02-21 09:00:47.676	3m 26s	3m 25s	87.1%	2.1 GB	59.9 GB	1.2 GB	14.9 MB
-2	cc/e731ad	2261752	flye	COMPLETED	0	2024-02-21 09:03:45.777	22m	21m 59s	807.4%	13.7 GB	14.8 GB	28.5 GB	4.5 GB
-4	91/8f36c6	2333522	medaka	COMPLETED	0	2024-02-21 09:25:45.647	10h 22m 22s	10h 22m 21s	104.9%	8.2 GB	54.4 GB	10.7 GB	7.1 GB
-5	a7/2f2585	2665816	Kraken2	COMPLETED	0	2024-02-21 19:48:07.200	6.5s	5.6s	100.4%	7.5 GB	7.5 GB	7.5 GB	1.8 MB
-7	d9/523c73	2666945	Semibin2_nanopore	COMPLETED	0	2024-02-21 19:48:13.682	5m 54s	5m 53s	254.1%	8.7 GB	451.8 GB	12.2 GB	6.1 GB
-10	9a/fdae84	2695298	PrependBinNames_nanopore	COMPLETED	0	2024-02-21 19:54:07.565	855ms	116ms	107.3%	11.6 MB	18.7 MB	24.5 MB	23.9 MB
-9	1d/22cc36	2695679	CheckM_nanopore	COMPLETED	0	2024-02-21 19:54:08.428	18m 26s	18m 25s	108.8%	43.7 GB	51.1 GB	26.3 GB	2.3 GB
-8	48/f4544e	2747894	GTDBTK_nanopore	COMPLETED	0	2024-02-21 20:12:34.019	9m 49s	9m 49s	183.3%	126.1 GB	167.5 GB	6.9 GB	372.7 MB
-11	e8/059234	2782510	PlasmidFinder_nanopore	COMPLETED	0	2024-02-21 20:22:23.516	32.7s	31.9s	100.1%	192 MB	445.3 MB	262.4 MB	22.6 MB
-14	3a/0a1a12	2784251	AMRfinder_nanopore	COMPLETED	0	2024-02-21 20:22:56.239	7m 38s	7m 38s	398.8%	102.8 MB	407.6 MB	68.9 MB	19.5 MB
-15	f7/eefebc	2797615	Vsearch_nanopore	COMPLETED	0	2024-02-21 20:30:34.707	19m 45s	19m 45s	5027.1%	11.1 GB	14.9 GB	164.5 MB	552 B
-6	96/4e277c	2665808	QUAST	COMPLETED	0	2024-02-21 19:48:07.191	1h 18m 57s	1h 18m 56s	275.8%	18.3 GB	51.2 GB	10.3 GB	3.1 GB
-13	ed/7da892	2999412	Deep_Arg_nanopore	COMPLETED	0	2024-02-21 21:07:03.976	19.7s	18.8s	2802.6%	652.5 MB	8.8 GB	159.1 MB	8.1 MB
-12	47/a58a7b	2816426	VirSorter2_nanopore	COMPLETED	0	2024-02-21 20:50:20.132	1h 47m 59s	1h 47m 58s	495.4%	316.2 MB	2.3 GB	1.6 TB	641.4 MB
+# Task Trace
+
+| Task ID | Hash      | Native ID | Name                      | Status    | Exit | Submit Date             | Duration    | Realtime   | % CPU   | Peak RSS | Peak VMEM | rchar  | wchar  |
+|---------|-----------|-----------|---------------------------|-----------|------|--------------------------|-------------|------------|---------|----------|-----------|--------|--------|
+| 1       | 4d/fec46d | 2851334   | nanoplot                  | CACHED    | 0    | 2024-07-16 20:46:33.833  | 3m 2s       | 2m 55s     | 101.5%  | 1 GB     | 31.9 GB   | 1.2 GB | 14.9 MB|
+| 2       | e1/a29cbf | 2846548   | chopper                   | CACHED    | 0    | 2024-07-16 20:43:24.701  | 3m 9s       | 2m 55s     | 243.5%  | 7 MB     | 20.3 MB   | 5.8 GB | 5.7 GB |
+| 3       | dc/e0af40 | 2857125   | flye                      | CACHED    | 0    | 2024-07-16 20:49:36.061  | 22m 25s     | 22m 11s    | 804.8%  | 13.7 GB  | 14.8 GB   | 28.5 GB| 4.5 GB |
+| 4       | 27/5a169c | 2924165   | medaka                    | CACHED    | 0    | 2024-07-16 21:12:00.760  | 10h 18m 38s | 10h 18m 27s| 105.0%  | 8.2 GB   | 54.4 GB   | 10.7 GB| 7.1 GB |
+| 8       | f8/001ba3 | 3234545   | QUAST                     | CACHED    | 0    | 2024-07-17 07:30:38.332  | 1h 4m 54s   | 1h 4m 41s  | 278.7%  | 18.5 GB  | 51.4 GB   | 10.3 GB| 3.1 GB |
+| 6       | ea/0cdd78 | 3266569   | Kraken2                   | CACHED    | 0    | 2024-07-17 08:35:32.237  | 17.8s       | 8.7s       | 92.3%   | 7.5 GB   | 7.5 GB    | 7.5 GB | 2.3 MB |
+| 7       | aa/1506d7 | 3282060   | Semibin2_nanopore         | CACHED    | 0    | 2024-07-17 08:39:14.487  | 6m 9s       | 5m 54s     | 292.8%  | 8.7 GB   | 451.8 GB  | 12.2 GB| 6 GB   |
+| 5       | fc/052913 | 3267347   | metawrapBinning_nanopore  | CACHED    | 0    | 2024-07-17 08:35:50.089  | 3m 24s      | 3m 10s     | 1806.7% | 3.9 GB   | 33 GB     | 10.6 GB| 4.3 GB |
+| 9       | 6b/919381 | 3304261   | DAStool_nanopore          | CACHED    | 0    | 2024-07-17 08:45:23.234  | 33.5s       | 19.9s      | 1200.8% | 2.1 GB   | 3.3 GB    | 1.1 GB | 194.7 MB|
+| 11      | 28/e1e5b3 | 3365235   | PrependBinNames_nanopore  | CACHED    | 0    | 2024-07-17 11:02:58.766  | 1.2s        | 361ms      | 95.3%   | 9.9 MB   | 17.5 MB   | 28.2 MB| 27.6 MB|
+| 10      | 6f/b3165e | 3340064   | CheckM_nanopore           | CACHED    | 0    | 2024-07-17 10:53:35.387  | 9m 23s      | 9m 11s     | 123.0%  | 27.1 GB  | 34.4 GB   | 16.3 GB| 550.6 MB|
+| 12      | 4f/d64c5a | 3365566   | GTDBTK_nanopore           | CACHED    | 0    | 2024-07-17 11:02:59.941  | 9m 45s      | 9m 31s     | 119.1%  | 450.5 GB | 457 GB    | 5.6 GB | 365.1 MB|
+| 17      | 4b/f9112b | 3390633   | Deep_Arg_nanopore         | CACHED    | 0    | 2024-07-17 11:12:44.723  | 33.3s       | 19.9s      | 2939.8% | 506.5 MB | 8.8 GB    | 164.1 MB| 9.4 MB |
+| 13      | 0c/e8645a | 3915810   | AMRfinder_nanopore        | COMPLETED | 0    | 2024-07-17 18:05:03.348  | 8m 54s      | 8m 40s     | 399.1%  | 106.9 MB | 456.9 MB  | 82.4 MB| 25.5 MB|
+| 14      | 58/9becf9 | 3929593   | VirSorter2_nanopore       | COMPLETED | 0    | 2024-07-17 18:13:57.178  | 2.7s        | 1.7s       | 253.9%  | 90.3 MB  | 280.4 MB  | 16 MB  | 50.1 KB|
+| 16      | 41/1a9be1 | 3930284   | PlasmidFinder_nanopore    | COMPLETED | 0    | 2024-07-17 18:13:59.931  | 49.3s       | 34.9s      | 100.1%  | 205.9 MB | 459.4 MB  | 330.1 MB| 26.2 MB|
+| 15      | 2e/7454b3 | 3931980   | Kaiju_nanopore            | COMPLETED | 0    | 2024-07-17 18:14:49.196  | 28.1s       | 15.6s      | 543.5%  | 4.7 GB   | 5.5 GB    | 4.8 GB | 23.9 MB|
+| 18      | ba/18de9b | 3932884   | summary_report            | COMPLETED | 0    | 2024-07-17 18:15:17.334  | 2.4s        | 1.4s       | 463.2%  | 74.6 MB  | 2.3 GB    | 10.9 MB| 38.4 KB|
