@@ -29,7 +29,7 @@ From quality control to contig assembly and resistance gene identification, Meta
 
 
 
-![image](https://github.com/user-attachments/assets/d95643df-2c1c-47bf-b643-81a6d527e1b0)
+![image](https://github.com/user-attachments/assets/aa8467ff-9c88-4e81-aa3d-94a352e83898)
 
 
 
