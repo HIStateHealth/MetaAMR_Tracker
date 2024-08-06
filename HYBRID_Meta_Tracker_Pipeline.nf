@@ -326,7 +326,8 @@ process GTDBTK_hybrid {
 	path gtdbtk_db
 
 	output:
-	path "gtdbtk_hybrid_output", emit: gtdbtk_hybrid_output_files
+	path "gtdbtk_hybrid_output/*", emit: gtdbtk_output_files
+	path "gtdbtk_hybrid_output/gtdbtk.bac120.summary.tsv", emit: gtdbtk_report
 
 	script:
 	"""
@@ -383,7 +384,7 @@ process AMRfinder_hybrid {
 	path merged_bins_fa
 
 	output:
-	path "amrfinder_hybrid_output/amr_finder_hybrid_report.txt", emit: amr_finder_hybrid_report
+	path "amrfinder_hybrid_output/amr_finder_hybrid_report.txt", emit: amr_finder_report
 
 	script:
 	"""
@@ -422,7 +423,8 @@ process PlasmidFinder_hybrid {
 	path merged_bins_fa
 
 	output:
-	path "plasmidfinder_hybrid_output/*", emit: plasmidfinder_hybrid_output_files
+	path "plasmidfinder_hybrid_output/*", emit: plasmidfinder_output_files
+        path "plasmidfinder_hybrid_output/results_tab.tsv", emit: plasmid_finder_report
 
 	script:
 	"""
@@ -442,7 +444,8 @@ process VirSorter2_hybrid {
 	path virsorter2_db
 
 	output:
-	path "virsorter2_hybrid_output", emit: virsorter2_hybrid_output_files
+	path "virsorter2_hybrid_output", emit: virsorter2_output_files
+	path "virsorter2_hybrid_output/final-viral-score.tsv", emit: virsorter2_report
 
 
 	script:
@@ -459,40 +462,22 @@ process summary_report {
 	publishDir "${params.output_dir}/summary_output", mode: 'copy'
 
 	input:
-	path amr_finder_report_with_abundance
+	path amr_finder_report
 	path gtdbtk_report
 	path plasmid_finder_report
 	path virsorter2_report
-	path merged_bins_fa
-	path forward_paired
-	path reverse_paired
-
+	
 	output:
 	
 	path "summary_output/amr_summary_with_locations.xlsx", emit: amr_summary
-	path "summary_output/GTDBTK_summary_with_abundance.xlsx", emit: gtdbtk_summary
-
+	
 	script:
 	"""
 	mkdir -p summary_output
-	amr_summary.py --amr_finder ${amr_finder_report_with_abundance} --gtdbtk ${gtdbtk_report} --plasmid ${plasmid_finder_report} --viral ${virsorter2_report} --output summary_output/amr_summary_with_locations.xlsx
+	amr_summary.py --amr_finder ${amr_finder_report} --gtdbtk ${gtdbtk_report} --plasmid ${plasmid_finder_report} --viral ${virsorter2_report} --output summary_output/amr_summary_with_locations.xlsx
 	
-	sed '/^>.*unbinned/d; /^>/s/ .*//' ${merged_bins_fa} > merged_bins_binned.fa
-
-	kma index -i merged_bins_binned.fa -o merged_bins_binned_index
-	kma -ipe ${forward_paired} ${reverse_paired} -o merged_bins_binned_kma_output -t_db merged_bins_binned_index -ef || {
-	exit_status=\$?
-	if [[ \$exit_status -ne 95 ]]; then
-	echo "kma failed with exit status \$exit_status"
-	exit \$exit_status
-	fi
-	echo "Ignoring kma exit status 95, continuing..."
-
-	}
-
-	calculate_abundance_bins_genus.py merged_bins_binned_kma_output.res ${gtdbtk_report} summary_output/GTDBTK_summary_with_abundance.xlsx
 	"""
-	}   
+	}  
         
 
 workflow  {
@@ -513,11 +498,11 @@ workflow  {
     checkm_results = CheckM_hybrid(dastool_results.dastool_output_bins)
     gtdbtk_results = GTDBTK_hybrid(dastool_results.dastool_output_bins, params.gtdbtk_db)
     prepend_results = PrependBinNames_hybrid(dastool_results.dastool_output_bins)
-    kaiju_output = Kaiju_hybrid(merged_bins, params.kaiju_fungi_db)
+    kaiju_output = Kaiju_hybrid(prepend_results.merged_bins_fa, params.kaiju_fungi_db)
     amrfinder_results = AMRfinder_hybrid(prepend_results.merged_bins_fa)
     deeparg_results = Deep_Arg_hybrid(prepend_results.merged_bins_fa)
     plasmidFinder_results = PlasmidFinder_hybrid(prepend_results.merged_bins_fa)
     virsorter2_results = VirSorter2_hybrid(prepend_results.merged_bins_fa,params.virsorter2_db)
-    summary_output = summary_report(amrfinder_output.amr_finder_report_with_abundance,gtdbtk_output.gtdbtk_report, plasmidfinder_output.plasmid_finder_report, virsorter2_output.virsorter2_report,
+    summary_output = summary_report(amrfinder_results.amr_finder_report,gtdbtk_results.gtdbtk_report, plasmidFinder_results.plasmid_finder_report, virsorter2_results.virsorter2_report)
     
     }
